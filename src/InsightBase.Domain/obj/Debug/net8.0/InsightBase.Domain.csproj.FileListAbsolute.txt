@@ -1,0 +1,11 @@
+C:\Users\black\Desktop\Toplu\GeriKalan\InsightBase\InsightBase\src\InsightBase.Domain\bin\Debug\net8.0\InsightBase.Domain.deps.json
+C:\Users\black\Desktop\Toplu\GeriKalan\InsightBase\InsightBase\src\InsightBase.Domain\bin\Debug\net8.0\InsightBase.Domain.dll
+C:\Users\black\Desktop\Toplu\GeriKalan\InsightBase\InsightBase\src\InsightBase.Domain\bin\Debug\net8.0\InsightBase.Domain.pdb
+C:\Users\black\Desktop\Toplu\GeriKalan\InsightBase\InsightBase\src\InsightBase.Domain\obj\Debug\net8.0\InsightBase.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\black\Desktop\Toplu\GeriKalan\InsightBase\InsightBase\src\InsightBase.Domain\obj\Debug\net8.0\InsightBase.Domain.AssemblyInfoInputs.cache
+C:\Users\black\Desktop\Toplu\GeriKalan\InsightBase\InsightBase\src\InsightBase.Domain\obj\Debug\net8.0\InsightBase.Domain.AssemblyInfo.cs
+C:\Users\black\Desktop\Toplu\GeriKalan\InsightBase\InsightBase\src\InsightBase.Domain\obj\Debug\net8.0\InsightBase.Domain.csproj.CoreCompileInputs.cache
+C:\Users\black\Desktop\Toplu\GeriKalan\InsightBase\InsightBase\src\InsightBase.Domain\obj\Debug\net8.0\InsightBase.Domain.dll
+C:\Users\black\Desktop\Toplu\GeriKalan\InsightBase\InsightBase\src\InsightBase.Domain\obj\Debug\net8.0\refint\InsightBase.Domain.dll
+C:\Users\black\Desktop\Toplu\GeriKalan\InsightBase\InsightBase\src\InsightBase.Domain\obj\Debug\net8.0\InsightBase.Domain.pdb
+C:\Users\black\Desktop\Toplu\GeriKalan\InsightBase\InsightBase\src\InsightBase.Domain\obj\Debug\net8.0\ref\InsightBase.Domain.dll
