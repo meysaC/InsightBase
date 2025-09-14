@@ -7,7 +7,7 @@ namespace InsightBase.Application.Interfaces
 {
     public interface IEmbeddingService
     {
-        Task<float[]> GenerateEmbeddingAsync(string text);
-        Task<float[]> GenerateEmbeddingWithRetryAsync(string text);
+        Task<List<float[]>> GenerateEmbeddingAsync(List<string> texts);
+        Task<List<float[]>> GenerateEmbeddingWithRetryAsync(List<string> texts);
     }
 }

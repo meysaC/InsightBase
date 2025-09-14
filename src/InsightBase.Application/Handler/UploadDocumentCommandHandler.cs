@@ -50,12 +50,47 @@ namespace InsightBase.Application.Handler
             //text i chunk lara böl
             var chunks = _chunking.ChunkText(text, maxTokens: 350); //350 tokenlik chunklar
             int index = 0;
-            int batchSize = 20; //her seferinde 20 chunk işleniyor 
-            foreach (var (content, start, end) in chunks)
-            // for (int i = 0; i < chunks.Count; i++)
+            int batchSize = 10; //her seferinde 20 chunk işleniyor, 
+            // foreach (var (content, start, end) in chunks)
+            for (int i = 0; i < chunks.Count; i += batchSize) // Batch halinde embedding isteği
             {
-                // var batch = chunks.Skip(i).Take(batchSize).ToList();
+                var batch = chunks.Skip(i).Take(batchSize).ToList();
+                var contents = batch.Select(b => b.Content).ToList();
 
+                await Task.Delay(1000, cancellationToken); // OpenAI rate limitleri için kısa bekleme
+
+                var embeddings = await _embedding.GenerateEmbeddingWithRetryAsync(contents);
+                
+                // her chunkı  tabloya kaydet.
+                for (int j = 0; j < batch.Count; j++)
+                {
+                    var (content, start, end) = batch[j];
+                    var vector = embeddings[j];
+
+                    var chunk = new DocumentChunk
+                    {
+                        Id = Guid.NewGuid(),
+                        DocumentId = document.Id,
+                        Content = content,
+                        ChunkIndex = index++,
+                        StartToken = start,
+                        EndToken = end,
+                        Length = content.Length,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    var embedding = new Embedding
+                    {
+                        Id = Guid.NewGuid(),
+                        DocumentChunkId = chunk.Id,
+                        Vector = vector,
+                        ModelName = "text-embedding-3-small",
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    chunk.Embedding = embedding;
+                    document.Chunks.Add(chunk);
+                }
                 // var vectors = await _embedding.GenerateEmbeddingWithRetryAsync(batch.Select(c => c.Content)).ToList();
 
                 // foreach (var (content, start, end) in batch)
@@ -91,37 +126,37 @@ namespace InsightBase.Application.Handler
 
 
 
-                var chunk = new DocumentChunk
-                {
-                    Id = Guid.NewGuid(), 
-                    DocumentId = document.Id,
-                    Content = content,
-                    ChunkIndex = index++,
-                    StartToken = start,
-                    EndToken = end,
-                    Length = content.Length,
-                    CreatedAt = DateTime.UtcNow
-                };
+                // var chunk = new DocumentChunk
+                // {
+                //     Id = Guid.NewGuid(), 
+                //     DocumentId = document.Id,
+                //     Content = content,
+                //     ChunkIndex = index++,
+                //     StartToken = start,
+                //     EndToken = end,
+                //     Length = content.Length,
+                //     CreatedAt = DateTime.UtcNow
+                // };
 
-                //var vector = await _embedding.GenerateEmbeddingAsync(content);
+                // //var vector = await _embedding.GenerateEmbeddingAsync(content);
 
-                // her chunk için embedding oluştur
-                // Retry + exponential backoff ile embedding üret, 
-                // Dosya büyükse onlarca / yüzlerce embedding isteği oluyor.
-                // OpenAI API’nin rate limitleri var (ör. dakikada X request, saniyede Y token). Limit aşılırsa TooManyRequests
-                float[] vector = await _embedding.GenerateEmbeddingWithRetryAsync(content);
+                // // her chunk için embedding oluştur
+                // // Retry + exponential backoff ile embedding üret, 
+                // // Dosya büyükse onlarca / yüzlerce embedding isteği oluyor.
+                // // OpenAI API’nin rate limitleri var (ör. dakikada X request, saniyede Y token). Limit aşılırsa TooManyRequests
+                // float[] vector = await _embedding.GenerateEmbeddingWithRetryAsync(content);
 
-                var embedding = new Embedding
-                {
-                    Id = Guid.NewGuid(),
-                    DocumentChunkId = chunk.Id,
-                    Vector = vector,
-                    ModelName = "text-embedding-3-small",
-                    CreatedAt = DateTime.UtcNow
-                };
+                // var embedding = new Embedding
+                // {
+                //     Id = Guid.NewGuid(),
+                //     DocumentChunkId = chunk.Id,
+                //     Vector = vector,
+                //     ModelName = "text-embedding-3-small",
+                //     CreatedAt = DateTime.UtcNow
+                // };
 
-                chunk.Embedding = embedding;
-                document.Chunks.Add(chunk);
+                // chunk.Embedding = embedding;
+                // document.Chunks.Add(chunk);
             }
             await _documents.AddAsync(document);
             await _documents.SaveAsync();

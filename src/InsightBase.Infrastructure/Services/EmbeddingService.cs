@@ -12,13 +12,14 @@ namespace InsightBase.Infrastructure.Services
     {
         private readonly IOpenAIService _openAIService;
         public EmbeddingService(IOpenAIService openAIService) => _openAIService = openAIService;
-        public async Task<float[]> GenerateEmbeddingAsync(string text)
+        public async Task<List<float[]>> GenerateEmbeddingAsync(List<string> texts)
         {
             try
             {
                 var request = new EmbeddingCreateRequest
                 {
-                    Input = text,
+                    InputAsList = texts, //tek seferde birden fazla text için
+                    //OpenAI .NET SDK’da Input parametresi aslında IEnumerable<object> veya List<string> alabiliyor (ama bazı versiyonlarda string gibi görünebilir)
                     Model = "text-embedding-3-small"
                 };
                 var response = await _openAIService.Embeddings.CreateEmbedding(request);
@@ -26,10 +27,14 @@ namespace InsightBase.Infrastructure.Services
 
                 if (response?.Data == null || !response.Data.Any())
                     throw new Exception("Failed to generate embedding. Embedding API failed or returned empty data. Check quota and API key.");
-                return response.Data[0].Embedding.Select(x => (float)x).ToArray();
+                // return response.Data[0].Embedding.Select(x => (float)x).ToArray();
                 // return response.Data
                 //     .Select(d => d.Embedding.Select(x => (float)x).ToArray())
                 //     .ToList();
+                return response.Data
+                        .OrderBy(d => d.Index)
+                        .Select(d => d.Embedding.Select(x => (float)x).ToArray())
+                        .ToList();
             }
             catch (Exception ex)
             {
@@ -38,7 +43,7 @@ namespace InsightBase.Infrastructure.Services
 
         }
 
-        public async Task<float[]> GenerateEmbeddingWithRetryAsync(string text)
+        public async Task<List<float[]>> GenerateEmbeddingWithRetryAsync(List<string> text)
         {
             int retries = 3;
             TimeSpan delay = TimeSpan.FromSeconds(2);
@@ -48,9 +53,14 @@ namespace InsightBase.Infrastructure.Services
                 {
                     return await GenerateEmbeddingAsync(text);
                 }
-                catch (Exception ex) when (i < retries - 1)
+                // catch (Exception ex) when (i < retries - 1)
+                // {
+                //     await Task.Delay(delay);
+                //     delay = delay * 2; // Exponential backoff
+                // }
+                catch (HttpRequestException ex) when (ex.Message.Contains("429")) // Rate limit hatası(429) için retry
                 {
-                    await Task.Delay(delay);
+                    await Task.Delay(delay); // API rate limit → bekle ve tekrar dene
                     delay = delay * 2; // Exponential backoff
                 }
             }
