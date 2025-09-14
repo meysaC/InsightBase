@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "jIbZXXOhRBE=",
+  "dgSpecHash": "yo1ZXEm21l4=",
   "success": true,
-  "projectFilePath": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Infrastructure\\InsightBase.Infrastructure.csproj",
+  "projectFilePath": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Infrastructure\\InsightBase.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\black\\.nuget\\packages\\betalgo.openai\\8.7.2\\betalgo.openai.8.7.2.nupkg.sha512",
     "C:\\Users\\black\\.nuget\\packages\\communitytoolkit.highperformance\\8.4.0\\communitytoolkit.highperformance.8.4.0.nupkg.sha512",
@@ -153,56 +153,6 @@
     "C:\\Users\\black\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512"
   ],
   "logs": [
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "'Microsoft.Extensions.Caching.Memory' 8.0.0 paketinde önem derecesi yüksek olan bilinen bir https://github.com/advisories/GHSA-qj66-m88j-hmgj güvenlik açığı var",
-      "libraryId": "Microsoft.Extensions.Caching.Memory",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "'Newtonsoft.Json' 12.0.3 paketinde önem derecesi yüksek olan bilinen bir https://github.com/advisories/GHSA-5crp-9r3c-p9vr güvenlik açığı var",
-      "libraryId": "Newtonsoft.Json",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "'System.Net.Http' 4.3.0 paketinde önem derecesi yüksek olan bilinen bir https://github.com/advisories/GHSA-7jgj-8wvc-jh57 güvenlik açığı var",
-      "libraryId": "System.Net.Http",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "'System.Text.Json' 8.0.4 paketinde önem derecesi yüksek olan bilinen bir https://github.com/advisories/GHSA-8g4q-xg66-9fp4 güvenlik açığı var",
-      "libraryId": "System.Text.Json",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "'System.Text.RegularExpressions' 4.3.0 paketinde önem derecesi yüksek olan bilinen bir https://github.com/advisories/GHSA-cmhx-cq75-c4mj güvenlik açığı var",
-      "libraryId": "System.Text.RegularExpressions",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
     {
       "code": "NU1701",
       "level": "Warning",

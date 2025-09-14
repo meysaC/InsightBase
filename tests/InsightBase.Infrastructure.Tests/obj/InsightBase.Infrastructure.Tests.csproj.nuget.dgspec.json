@@ -1,36 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\tests\\InsightBase.Infrastructure.Tests\\InsightBase.Infrastructure.Tests.csproj": {}
+    "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\tests\\InsightBase.Infrastructure.Tests\\InsightBase.Infrastructure.Tests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\tests\\InsightBase.Infrastructure.Tests\\InsightBase.Infrastructure.Tests.csproj": {
+    "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\tests\\InsightBase.Infrastructure.Tests\\InsightBase.Infrastructure.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\tests\\InsightBase.Infrastructure.Tests\\InsightBase.Infrastructure.Tests.csproj",
+        "projectUniqueName": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\tests\\InsightBase.Infrastructure.Tests\\InsightBase.Infrastructure.Tests.csproj",
         "projectName": "InsightBase.Infrastructure.Tests",
-        "projectPath": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\tests\\InsightBase.Infrastructure.Tests\\InsightBase.Infrastructure.Tests.csproj",
+        "projectPath": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\tests\\InsightBase.Infrastructure.Tests\\InsightBase.Infrastructure.Tests.csproj",
         "packagesPath": "C:\\Users\\black\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\tests\\InsightBase.Infrastructure.Tests\\obj\\",
+        "outputPath": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\tests\\InsightBase.Infrastructure.Tests\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\black\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\black\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net9.0"
+          "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net9.0": {
-            "targetAlias": "net9.0",
+          "net8.0": {
+            "targetAlias": "net8.0",
             "projectReferences": {}
           }
         },
@@ -42,13 +36,12 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "all"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+          "auditMode": "direct"
+        }
       },
       "frameworks": {
-        "net9.0": {
-          "targetAlias": "net9.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "dependencies": {
             "Microsoft.NET.Test.Sdk": {
               "target": "Package",
@@ -83,7 +76,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

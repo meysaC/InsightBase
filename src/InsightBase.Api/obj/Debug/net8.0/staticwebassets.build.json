@@ -1,12 +1,11 @@
 {
   "Version": 1,
-  "Hash": "9M8PvhEhjFqB60f+wnNqd9J+7HWJgDMFPeYSKw8QAxI=",
+  "Hash": "nboRAiHVhaCeGmv9+mil/RkUQ4hBlYo5x172o1EC9s4=",
   "Source": "InsightBase.Api",
   "BasePath": "_content/InsightBase.Api",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": [],
-  "Endpoints": []
+  "Assets": []
 }

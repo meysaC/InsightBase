@@ -8547,42 +8547,35 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\black\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\black\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Api\\InsightBase.Api.csproj",
+      "projectUniqueName": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Api\\InsightBase.Api.csproj",
       "projectName": "InsightBase.Api",
-      "projectPath": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Api\\InsightBase.Api.csproj",
+      "projectPath": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Api\\InsightBase.Api.csproj",
       "packagesPath": "C:\\Users\\black\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Api\\obj\\",
+      "outputPath": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Api\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\black\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\black\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Application\\InsightBase.Application.csproj": {
-              "projectPath": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Application\\InsightBase.Application.csproj"
+            "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Application\\InsightBase.Application.csproj": {
+              "projectPath": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Application\\InsightBase.Application.csproj"
             },
-            "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Infrastructure\\InsightBase.Infrastructure.csproj": {
-              "projectPath": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Infrastructure\\InsightBase.Infrastructure.csproj"
+            "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Infrastructure\\InsightBase.Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Infrastructure\\InsightBase.Infrastructure.csproj"
             }
           }
         }
@@ -8595,9 +8588,8 @@
       "restoreAuditProperties": {
         "enableAudit": "true",
         "auditLevel": "low",
-        "auditMode": "all"
-      },
-      "SdkAnalysisLevel": "9.0.100"
+        "auditMode": "direct"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -8645,46 +8637,16 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
       }
     }
   },
   "logs": [
     {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj",
-      "libraryId": "Microsoft.Extensions.Caching.Memory",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'Newtonsoft.Json' 12.0.3 has a known high severity vulnerability, https://github.com/advisories/GHSA-5crp-9r3c-p9vr",
-      "libraryId": "Newtonsoft.Json",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'System.Text.Json' 8.0.4 has a known high severity vulnerability, https://github.com/advisories/GHSA-8g4q-xg66-9fp4",
-      "libraryId": "System.Text.Json",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
       "code": "NU1701",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "Package 'Microsoft.AspNet.WebApi.Core 5.2.7' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0'. This package may not be fully compatible with your project.",
+      "message": "'Microsoft.AspNet.WebApi.Core 5.2.7' paketi, proje hedef çerçevesi 'net8.0' yerine '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' kullanılarak geri yüklendi. Bu paket projenizle tamamen uyumlu olmayabilir.",
       "libraryId": "Microsoft.AspNet.WebApi.Core",
       "targetGraphs": [
         "net8.0"

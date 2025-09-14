@@ -8153,42 +8153,35 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\black\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\black\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Infrastructure\\InsightBase.Infrastructure.csproj",
+      "projectUniqueName": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Infrastructure\\InsightBase.Infrastructure.csproj",
       "projectName": "InsightBase.Infrastructure",
-      "projectPath": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Infrastructure\\InsightBase.Infrastructure.csproj",
+      "projectPath": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Infrastructure\\InsightBase.Infrastructure.csproj",
       "packagesPath": "C:\\Users\\black\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Infrastructure\\obj\\",
+      "outputPath": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\black\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\black\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Application\\InsightBase.Application.csproj": {
-              "projectPath": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Application\\InsightBase.Application.csproj"
+            "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Application\\InsightBase.Application.csproj": {
+              "projectPath": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Application\\InsightBase.Application.csproj"
             },
-            "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Domain\\InsightBase.Domain.csproj": {
-              "projectPath": "C:\\Users\\black\\Desktop\\Toplu\\GeriKalan\\InsightBase\\InsightBase\\src\\InsightBase.Domain\\InsightBase.Domain.csproj"
+            "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Domain\\InsightBase.Domain.csproj": {
+              "projectPath": "C:\\Users\\black\\OneDrive\\Desktop\\Projeler\\InsightBase\\src\\InsightBase.Domain\\InsightBase.Domain.csproj"
             }
           }
         }
@@ -8201,9 +8194,8 @@
       "restoreAuditProperties": {
         "enableAudit": "true",
         "auditLevel": "low",
-        "auditMode": "all"
-      },
-      "SdkAnalysisLevel": "9.0.100"
+        "auditMode": "direct"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -8268,61 +8260,11 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
       }
     }
   },
   "logs": [
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "'Microsoft.Extensions.Caching.Memory' 8.0.0 paketinde önem derecesi yüksek olan bilinen bir https://github.com/advisories/GHSA-qj66-m88j-hmgj güvenlik açığı var",
-      "libraryId": "Microsoft.Extensions.Caching.Memory",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "'Newtonsoft.Json' 12.0.3 paketinde önem derecesi yüksek olan bilinen bir https://github.com/advisories/GHSA-5crp-9r3c-p9vr güvenlik açığı var",
-      "libraryId": "Newtonsoft.Json",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "'System.Net.Http' 4.3.0 paketinde önem derecesi yüksek olan bilinen bir https://github.com/advisories/GHSA-7jgj-8wvc-jh57 güvenlik açığı var",
-      "libraryId": "System.Net.Http",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "'System.Text.Json' 8.0.4 paketinde önem derecesi yüksek olan bilinen bir https://github.com/advisories/GHSA-8g4q-xg66-9fp4 güvenlik açığı var",
-      "libraryId": "System.Text.Json",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "'System.Text.RegularExpressions' 4.3.0 paketinde önem derecesi yüksek olan bilinen bir https://github.com/advisories/GHSA-cmhx-cq75-c4mj güvenlik açığı var",
-      "libraryId": "System.Text.RegularExpressions",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
     {
       "code": "NU1701",
       "level": "Warning",
