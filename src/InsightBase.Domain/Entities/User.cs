@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace InsightBase.Domain.Entities
 {
-    public class User
+    public class User // Bu gereksiz SİL???? !!!!!!!!!!!!!!!!!!!!!
     {
         public string Id { get; set; }
         public string FirstName { get; set; } = string.Empty;

@@ -11,7 +11,7 @@ namespace InsightBase.Infrastructure.Persistence
     { 
         public Guid Id { get; set; } = Guid.NewGuid();
         public Guid DocumentChunkId { get; set; }
-        [Column(TypeName = "vector(3072)")]
+        [Column(TypeName = "vector(1536)")] //pgvector sütun tipi text-embedding-3-large için 3072 boyutlu vektör
         public Vector? Vector { get; set; } 
         public string ModelName { get; set; } = "";
         public DateTime CreatedAt { get; set; }

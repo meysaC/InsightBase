@@ -6,7 +6,8 @@ namespace InsightBase.Domain.Entities
     {
         public Guid Id { get; set; } = Guid.NewGuid(); //EF eklenmeden önce Id’ler belli olur böylece
         public string Title { get; set; } = string.Empty;
-        public string Content { get; set; } = string.Empty;
+
+        // public string Content { get; set; } = string.Empty;
         [Required]
         public string FilePath { get; set; } = string.Empty;
         public string? ContentType { get; set; }
@@ -20,7 +21,7 @@ namespace InsightBase.Domain.Entities
         public string Checksum { get; set; } = string.Empty;
         
         public string? UserId { get; set; }
-        public User? User { get; set; } // yükleyen kullanıcı
+        // public User? User { get; set; } // yükleyen kullanıcı
 
         public ICollection<DocumentChunk> Chunks { get; set; } = new List<DocumentChunk>();
     }

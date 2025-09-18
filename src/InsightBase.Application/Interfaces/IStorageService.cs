@@ -7,6 +7,6 @@ namespace InsightBase.Application.Interfaces
 {
     public interface IStorageService
     {
-        Task<string> UploadAsync(string fileName, byte[] content);
+        Task<string> UploadAsync(string fileName, byte[] content); //dosyayı byte array olarak alacak
     }
 }

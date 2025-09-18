@@ -1,5 +1,15 @@
+# ---- Dotnet ----
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.log
+
+
 .env
 node_modules/
 .vscode/
-*.log
+.vs/
 .fake

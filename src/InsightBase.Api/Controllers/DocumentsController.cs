@@ -27,7 +27,7 @@ namespace InsightBase.Api.Controllers
 
             var command = new UploadDocumentCommand
             {
-                FileName = request.FileName,
+                FileName = request.File.FileName, //doğru dosya adını alır (.pdf, .docx, .txt uzantısı dahil)
                 Content = memoryStream.ToArray()
             };
             var documentId = await _mediator.Send(command);

@@ -34,10 +34,6 @@ namespace InsightBase.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("ContentType")
                         .HasColumnType("text");
 
@@ -118,6 +114,9 @@ namespace InsightBase.Infrastructure.Migrations
                     b.Property<int>("StartToken")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DocumentId");
@@ -132,9 +131,7 @@ namespace InsightBase.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("DocumentChunkId")
                         .HasColumnType("uuid");
@@ -153,24 +150,6 @@ namespace InsightBase.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Embedding");
-                });
-
-            modelBuilder.Entity("InsightBase.Domain.Entities.User", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("InsightBase.Infrastructure.Persistence.ApplicationUser", b =>
@@ -256,7 +235,7 @@ namespace InsightBase.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<Vector>("Vector")
-                        .HasColumnType("vector(3072)");
+                        .HasColumnType("vector(1536)");
 
                     b.HasKey("Id");
 
@@ -400,11 +379,10 @@ namespace InsightBase.Infrastructure.Migrations
 
             modelBuilder.Entity("InsightBase.Domain.Entities.Document", b =>
                 {
-                    b.HasOne("InsightBase.Domain.Entities.User", "User")
-                        .WithMany("Documents")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
+                    b.HasOne("InsightBase.Infrastructure.Persistence.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("InsightBase.Domain.Entities.DocumentChunk", b =>
@@ -497,11 +475,6 @@ namespace InsightBase.Infrastructure.Migrations
             modelBuilder.Entity("InsightBase.Domain.Entities.DocumentChunk", b =>
                 {
                     b.Navigation("Embedding");
-                });
-
-            modelBuilder.Entity("InsightBase.Domain.Entities.User", b =>
-                {
-                    b.Navigation("Documents");
                 });
 #pragma warning restore 612, 618
         }

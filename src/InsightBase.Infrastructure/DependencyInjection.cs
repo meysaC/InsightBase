@@ -13,6 +13,7 @@ using InsightBase.Infrastructure.Services;
 using InsightBase.Infrastructure.Repositories;
 using OpenAI.Extensions;
 using Minio;
+using InsightBase.Infrastructure.Workers;
 
 namespace InsightBase.Infrastructure
 {
@@ -54,9 +55,14 @@ namespace InsightBase.Infrastructure
             services.AddScoped<IEmbeddingService, EmbeddingService>();
             services.AddScoped<VectorDbService>();
             services.AddScoped<IStorageService, MinioStorageService>();
+            services.AddScoped<ITextExtractionService, TextExtractionService>();
             services.AddSingleton<MinioClient>();
             services.AddScoped<IChunkingService, TokenBasedChunkingService>();
             services.AddScoped<IDocumentRepository, DocumentRepository>();
+            services.AddScoped<IEmbeddingRepository, EmbeddingRepository>();
+            services.AddSingleton<IMessageBus, RabbitMqMessageBus>();
+            services.AddHostedService<EmbeddingWorker>(); //HostedService kendiliğinden Singleton gibi davranır
+
             return services;
         }
 

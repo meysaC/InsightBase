@@ -24,13 +24,8 @@ namespace InsightBase.Infrastructure.Services
                 };
                 var response = await _openAIService.Embeddings.CreateEmbedding(request);
 
-
                 if (response?.Data == null || !response.Data.Any())
                     throw new Exception("Failed to generate embedding. Embedding API failed or returned empty data. Check quota and API key.");
-                // return response.Data[0].Embedding.Select(x => (float)x).ToArray();
-                // return response.Data
-                //     .Select(d => d.Embedding.Select(x => (float)x).ToArray())
-                //     .ToList();
                 return response.Data
                         .OrderBy(d => d.Index)
                         .Select(d => d.Embedding.Select(x => (float)x).ToArray())
@@ -43,7 +38,7 @@ namespace InsightBase.Infrastructure.Services
 
         }
 
-        public async Task<List<float[]>> GenerateEmbeddingWithRetryAsync(List<string> text)
+        public async Task<List<float[]>> GenerateEmbeddingWithRetryAsync(List<string> texts)
         {
             int retries = 3;
             TimeSpan delay = TimeSpan.FromSeconds(2);
@@ -51,20 +46,35 @@ namespace InsightBase.Infrastructure.Services
             {
                 try
                 {
-                    return await GenerateEmbeddingAsync(text);
+                    return await GenerateEmbeddingAsync(texts);
                 }
                 // catch (Exception ex) when (i < retries - 1)
                 // {
                 //     await Task.Delay(delay);
                 //     delay = delay * 2; // Exponential backoff
                 // }
-                catch (HttpRequestException ex) when (ex.Message.Contains("429")) // Rate limit hatası(429) için retry
+                catch (HttpRequestException ex) when (IsTransient(ex)) //ex.Message.Contains("429") Rate limit hatası(429) için retry
                 {
                     await Task.Delay(delay); // API rate limit → bekle ve tekrar dene
                     delay = delay * 2; // Exponential backoff
                 }
             }
             throw new Exception("Max retry attempts reached while generating embedding.");
+        }
+
+        //OpenAI'nin API'sinde rate limit ve kısa süreli hatalar olabilir; düzgün retry stratejisi ile işler daha stabil olur.
+        private bool IsTransient(Exception ex)
+        {
+            var msg = ex.Message?.ToLower();
+            if (msg.Contains("429") || // Rate limit
+                msg.Contains("503") || // Service Unavailable
+                msg.Contains("504") || // Gateway Timeout
+                msg.Contains("500") ||   // Internal Server Error
+                msg.Contains("rate limit"))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
