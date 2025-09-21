@@ -1,0 +1,36 @@
+# ---- Build outputs ----
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+*.log
+
+# ---- Visual Studio files ----
+.vs/
+*.user
+*.rsuser
+*.suo
+
+# ---- Dotnet build artifacts ----
+*.dll
+*.exe
+*.pdb
+*.cache
+*.json
+*.deps.json
+*.runtimeconfig.json
+*.dgspec.json
+project.assets.json
+*.sourcelink.json
+*.assemblyInfo.cs
+
+# ---- Test results ----
+TestResult/
+*.trx
+*.coverage
+*.coveragexml
+
+# ---- Other common ignores ----
+node_modules/
+.env
+.vscode/
