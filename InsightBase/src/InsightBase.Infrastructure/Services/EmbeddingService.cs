@@ -13,7 +13,7 @@ namespace InsightBase.Infrastructure.Services
     {
         private readonly IOpenAIService _openAIService;
         private readonly ILogger<EmbeddingService> _logger;
-        private readonly SemaphoreSlim _rateLimitSmaphore = new SemaphoreSlim(3, 3);//tek seferde enfazla 3 istek
+        private readonly SemaphoreSlim _rateLimitSmaphore = new SemaphoreSlim(3, 3); //tek seferde enfazla 3 istek
         public EmbeddingService(IOpenAIService openAIService, ILogger<EmbeddingService> logger) => (_openAIService, _logger) = (openAIService, logger);
         public async Task<List<float[]>> GenerateEmbeddingAsync(List<string> texts)
         {

@@ -53,7 +53,7 @@ namespace InsightBase.Application.Handler
             var text = await _textExtraction.ExtractTextAsync(request.Content, request.FileName);
 
             //text i chunk lara böl
-            var chunks = _chunking.ChunkText(text, maxTokens: 350); //350 tokenlik chunklar
+            var chunks = _chunking.ChunkText(text, maxTokens: 200); //350 tokenlik chunklar
 
             int index = 0;
             foreach (var (content, start, end) in chunks)
@@ -72,6 +72,7 @@ namespace InsightBase.Application.Handler
                 };
 
                 document.Chunks.Add(chunk);
+                
                 //Embedding üretimi EmbeddingWorker da backgroundService ile
             }
             await _documents.AddAsync(document);
