@@ -9,9 +9,11 @@ namespace InsightBase.Domain.Entities
 
         [Required]
         public string FilePath { get; set; } = string.Empty;
+        public string FileType{ get; set; } = string.Empty;
         public string? ContentType { get; set; }
         public long FileSize { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public string? DocumentType { get; set; } // kanun, yonetmelik, karar
         public DateTime? PublishDate { get; set; }
         public string? LegalArea { get; set; } // medeni_hukuk, ceza_hukuku

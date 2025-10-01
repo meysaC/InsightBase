@@ -3,6 +3,7 @@ using System;
 using InsightBase.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pgvector;
@@ -12,9 +13,11 @@ using Pgvector;
 namespace InsightBase.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250928185751_DocumentFileTypeUpdatedAt")]
+    partial class DocumentFileTypeUpdatedAt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,7 +91,7 @@ namespace InsightBase.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Documents", (string)null);
+                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("InsightBase.Domain.Entities.DocumentChunk", b =>
@@ -128,7 +131,7 @@ namespace InsightBase.Infrastructure.Migrations
 
                     b.HasIndex("DocumentId");
 
-                    b.ToTable("DocumentChunks", (string)null);
+                    b.ToTable("DocumentChunks");
                 });
 
             modelBuilder.Entity("InsightBase.Domain.Entities.Embedding", b =>
@@ -156,7 +159,7 @@ namespace InsightBase.Infrastructure.Migrations
                     b.HasIndex("DocumentChunkId")
                         .IsUnique();
 
-                    b.ToTable("Embedding", (string)null);
+                    b.ToTable("Embedding");
                 });
 
             modelBuilder.Entity("InsightBase.Infrastructure.Persistence.ApplicationUser", b =>

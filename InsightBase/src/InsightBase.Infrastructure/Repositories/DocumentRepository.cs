@@ -17,6 +17,12 @@ namespace InsightBase.Infrastructure.Repositories
         public DocumentRepository(AppDbContext context, ILogger<DocumentRepository> logger) => (_context, _logger)  = (context, logger) ;
         public async Task AddAsync(Document document) => await _context.Documents.AddAsync(document);
 
+        public async Task DeleteAsync(Document document)
+        {
+            _context.Documents.Remove(document);
+            await Task.CompletedTask;
+        }
+
         public async Task<Document> GetByIdAsync(Guid id)
         {
             // OKUMA İŞİ OLDUĞU İÇİN AsNoTracking kullanmak tracked entity’ler çakışıyor sorunu olmasını aza indirir
@@ -36,5 +42,17 @@ namespace InsightBase.Infrastructure.Repositories
         }
 
         public async Task<int> SaveAsync() => await _context.SaveChangesAsync();
+
+        public async Task UpdateAsync(Document document)
+        {
+            var documentDomain = await _context.Documents.FirstOrDefaultAsync(d => d.Id == document.Id);
+
+            documentDomain.Title = document.Title;
+            documentDomain.LegalArea = document.LegalArea;
+            documentDomain.IsPublic = document.IsPublic;
+
+            _context.Documents.Update(documentDomain);
+            await Task.CompletedTask; //ef core zaten change tracker üzerindne takip ediyor
+        }
     }
 }

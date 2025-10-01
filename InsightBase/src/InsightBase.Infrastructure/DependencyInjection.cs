@@ -60,6 +60,7 @@ namespace InsightBase.Infrastructure
             services.AddScoped<IChunkingService, TokenBasedChunkingService>();
             services.AddScoped<IDocumentRepository, DocumentRepository>();
             services.AddScoped<IEmbeddingRepository, EmbeddingRepository>();
+            services.AddScoped<IRedisCacheService, RedisCacheService>();
             services.AddSingleton<IMessageBus, RabbitMqMessageBus>();
             services.AddHostedService<EmbeddingWorker>(); //HostedService kendiliğinden Singleton gibi davranır
 
