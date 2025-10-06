@@ -17,10 +17,19 @@ namespace InsightBase.Infrastructure.Repositories
         public DocumentRepository(AppDbContext context, ILogger<DocumentRepository> logger) => (_context, _logger)  = (context, logger) ;
         public async Task AddAsync(Document document) => await _context.Documents.AddAsync(document);
 
-        public async Task DeleteAsync(Document document)
+        public async Task<bool> DeleteAsync(Document document)
         {
-            _context.Documents.Remove(document);
-            await Task.CompletedTask;
+            try
+            {
+                _context.Documents.Remove(document);
+                // await Task.CompletedTask;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Document could not be removed from the database, document id: {document.Id}", ex);
+            }
+
         }
 
         public async Task<Document> GetByIdAsync(Guid id)
@@ -47,7 +56,7 @@ namespace InsightBase.Infrastructure.Repositories
         {
             var documentDomain = await _context.Documents.FirstOrDefaultAsync(d => d.Id == document.Id);
 
-            documentDomain.Title = document.Title;
+            documentDomain.UserFileName = document.UserFileName;
             documentDomain.LegalArea = document.LegalArea;
             documentDomain.IsPublic = document.IsPublic;
 

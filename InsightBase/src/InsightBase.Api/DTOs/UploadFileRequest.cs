@@ -10,6 +10,7 @@ namespace InsightBase.Api.DTOs
     {
         [FromForm(Name = "file")]
         public IFormFile File { get; set; }
+        public string? UserFileName { get; set; }
         public string FileName { get; set; }
     }
 }

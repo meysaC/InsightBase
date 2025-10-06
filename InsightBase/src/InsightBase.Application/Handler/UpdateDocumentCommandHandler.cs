@@ -18,16 +18,7 @@ namespace InsightBase.Application.Handler
                 var document = await _documents.GetByIdAsync(request.Id);
                 if (document == null ) return null;
 
-                //file name ile file path tutulduğu için dosya ismi değiştirilirse file path de değişmeli
-                if (request.FileName != null && request.FileName != document.Title)
-                {
-                    var successDeleteFile = await _storage.RemoveObjectAsync(request.FileName, null);
-                    if (!successDeleteFile) return null;
-                    var newFileUrl = await _storage.UploadAsync(request.FileName, document.FileType, null);
-                    document.FilePath = newFileUrl;
-                }
-
-                document.Title = request.FileName ?? document.Title;
+                document.UserFileName = request.FileName ?? document.UserFileName;
                 document.LegalArea = request.LegalArea ?? document.LegalArea;
                 document.IsPublic = request.IsPublic;
                 document.UpdatedAt = DateTime.Now;
@@ -38,7 +29,7 @@ namespace InsightBase.Application.Handler
                 return new DocumentDto
                 {
                     Id = document.Id,
-                    Title = document.Title,
+                    FileName = document.UserFileName,
                     DocumentType = document.DocumentType,
                     CreatedAt = document.CreatedAt,
                     UpdatedAt = document.UpdatedAt

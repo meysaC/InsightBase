@@ -24,7 +24,8 @@ namespace InsightBase.Api.Controllers
 
             var command = new UploadDocumentCommand
             {
-                FileName = request.FileName ?? request.File.FileName,
+                UserFileName = request.UserFileName ?? request.File.FileName,
+                FileName = request.File.FileName,
                 FileType = request.File.FileName, //doğru dosya adını alır (.pdf, .docx, .txt uzantısı dahil)
                 Content = memoryStream.ToArray()
             };
@@ -46,14 +47,14 @@ namespace InsightBase.Api.Controllers
         //     return Ok(result);
         // }
         //READ DETAIL
-        // [HttpGet("{id:guid}")]
-        // public async Task<IActionResult> GetById([FromRoute] Guid id)
-        // {
-        //     var query = new GetDocumentByIdCommand(id);
-        //     var result = await _mediator.Send(query);
-        //     if (result == null) return NotFound(); // 404
-        //     return Ok(result);
-        // }
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        {
+            var query = new GetDocumentByIdCommand(id);
+            var result = await _mediator.Send(query);
+            if (result == null) return NotFound(); // 404
+            return Ok(result);
+        }
         //UPDATE
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateDocumentRequest request)
@@ -69,8 +70,10 @@ namespace InsightBase.Api.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var command = new DeleteDocumentCommand(id);
-            var success = await _mediator.Send(command);
-            return success ? NoContent() : NotFound();
+            var result = await _mediator.Send(command);
+            if (result == null) return StatusCode(500, "Unexcepted null result.");
+            if (result.Failed.Any()) return NotFound(result);
+            return NoContent();
         }
     }
 }

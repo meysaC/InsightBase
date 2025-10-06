@@ -42,14 +42,15 @@ namespace InsightBase.Application.Handler
             var document = new Document
             {
                 Id = Guid.NewGuid(),
-                Title = request.FileName,
+                UserFileName = request.UserFileName,
+                FileName = request.FileName,
                 FilePath = fileUrl,
-                //DocumentType = request.FileType,
+                FileType = request.FileType,
                 UserId = string.IsNullOrEmpty(request.UserId) ? null : request.UserId,
                 CreatedAt = DateTime.UtcNow,
-                Chunks = new List<DocumentChunk>(),
+                Chunks = new List<DocumentChunk>()
+                //DocumentType = request.FileType, //kanun, yönetmelik, karar...
                 // Checksum = ComputeChecksum(request.Content) // İsteğe bağlı: Dosya bütünlüğü için
-                FileType = request.FileType
             };
 
             //dosyayı text e çevvir 
@@ -89,7 +90,7 @@ namespace InsightBase.Application.Handler
             return new DocumentDto
             {
                 Id = document.Id,
-                Title = document.Title,
+                FileName = document.FileName,
                 DocumentType = document.DocumentType,
                 CreatedAt = document.CreatedAt,
                 UpdatedAt = document.UpdatedAt

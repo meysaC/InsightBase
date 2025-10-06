@@ -22,7 +22,7 @@ namespace InsightBase.Api.Mappers
             var documentCommand = new UpdateDocumentCommand
             {
                 Id = id,
-                FileName = updateDocument.FileName,
+                FileName = updateDocument.UserFileName, 
                 LegalArea = updateDocument.LegalArea,
                 IsPublic = updateDocument.IsPublic
             };

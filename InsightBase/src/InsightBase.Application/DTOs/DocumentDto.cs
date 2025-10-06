@@ -3,7 +3,7 @@ namespace InsightBase.Application.DTOs
     public class DocumentDto //ortak kullanılcak
     {
         public Guid Id { get; set; }
-        public string Title { get; set; } = string.Empty;
+        public string FileName { get; set; } = string.Empty;
         //public string FilePath { get; set; } = string.Empty;
         public string DocumentType { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }

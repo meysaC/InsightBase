@@ -11,7 +11,7 @@ namespace InsightBase.Application.Interfaces
         Task AddAsync(Domain.Entities.Document document); //Application katmanı → Domain katmanına bağımlı olabilir (ama Infrastructure’a olamaz). 
                                                           // o yüzden UploadDocumentCommand içerisinde IFormFile kullanamayacağımız için burada kullanıyoruz.
         Task UpdateAsync(Domain.Entities.Document document);
-        Task DeleteAsync(Domain.Entities.Document document);
+        Task<bool> DeleteAsync(Domain.Entities.Document document);
         Task<int> SaveAsync();
     }
 }
