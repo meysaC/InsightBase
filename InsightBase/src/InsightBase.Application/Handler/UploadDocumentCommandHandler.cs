@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InsightBase.Application.Commands;
+using InsightBase.Application.DTOs;
 using InsightBase.Application.Events;
 using InsightBase.Application.Interfaces;
 using InsightBase.Domain.Entities;
@@ -10,7 +11,7 @@ using MediatR;
 
 namespace InsightBase.Application.Handler
 {
-    public class UploadDocumentCommandHandler : IRequestHandler<UploadDocumentCommand, Guid>
+    public class UploadDocumentCommandHandler : IRequestHandler<UploadDocumentCommand, DocumentDto> //Guid
     {
         private readonly IStorageService _storage;
         private readonly IChunkingService _chunking;
@@ -33,24 +34,27 @@ namespace InsightBase.Application.Handler
             _messageBus = messageBus;
             _textExtraction = textExtraction;
         }
-        public async Task<Guid> Handle(UploadDocumentCommand request, CancellationToken cancellationToken)
+        public async Task<DocumentDto?> Handle(UploadDocumentCommand request, CancellationToken cancellationToken) //Guid
         {
             //minio ya yükle
-            var fileUrl = await _storage.UploadAsync(request.FileName, request.Content);
+            var fileUrl = await _storage.UploadAsync(request.FileName, request.FileType, request.Content);
             
             var document = new Document
             {
                 Id = Guid.NewGuid(),
-                Title = request.FileName,
+                UserFileName = request.UserFileName,
+                FileName = request.FileName,
                 FilePath = fileUrl,
+                FileType = request.FileType,
                 UserId = string.IsNullOrEmpty(request.UserId) ? null : request.UserId,
                 CreatedAt = DateTime.UtcNow,
                 Chunks = new List<DocumentChunk>()
+                //DocumentType = request.FileType, //kanun, yönetmelik, karar...
                 // Checksum = ComputeChecksum(request.Content) // İsteğe bağlı: Dosya bütünlüğü için
             };
 
             //dosyayı text e çevvir 
-            var text = await _textExtraction.ExtractTextAsync(request.Content, request.FileName);
+            var text = await _textExtraction.ExtractTextAsync(request.Content, request.FileType);
 
             //text i chunk lara böl
             var chunks = _chunking.ChunkText(text, maxTokens: 200); //350 tokenlik chunklar
@@ -82,7 +86,15 @@ namespace InsightBase.Application.Handler
             var job = new EmbeddingJobCreatedEvent(document.Id);
             await _messageBus.PublishAsync("embedding_jobs", job);
 
-            return document.Id;
+            // return document.Id;
+            return new DocumentDto
+            {
+                Id = document.Id,
+                FileName = document.FileName,
+                DocumentType = document.DocumentType,
+                CreatedAt = document.CreatedAt,
+                UpdatedAt = document.UpdatedAt
+            };
         }
     }
 }

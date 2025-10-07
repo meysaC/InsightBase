@@ -17,7 +17,22 @@ namespace InsightBase.Infrastructure.Repositories
         public DocumentRepository(AppDbContext context, ILogger<DocumentRepository> logger) => (_context, _logger)  = (context, logger) ;
         public async Task AddAsync(Document document) => await _context.Documents.AddAsync(document);
 
-        public async Task<Document> GetByIdAsync(Guid id)
+        public async Task<bool> DeleteAsync(Document document)
+        {
+            try
+            {
+                _context.Documents.Remove(document);
+                // await Task.CompletedTask;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Document could not be removed from the database, document id: {document.Id}", ex);
+            }
+
+        }
+
+        public async Task<Document?> GetByIdAsync(Guid id)
         {
             // OKUMA İŞİ OLDUĞU İÇİN AsNoTracking kullanmak tracked entity’ler çakışıyor sorunu olmasını aza indirir
             try
@@ -35,6 +50,31 @@ namespace InsightBase.Infrastructure.Repositories
             }
         }
 
+        public async Task<(IEnumerable<Document> Items, int TotalCount)> GetAllAsync(int page, int pageSize) //items ve total count dönücez
+        {
+            var totalCount = await _context.Documents.CountAsync();
+
+            var items = await _context.Documents
+                        .OrderByDescending(d => d.CreatedAt)
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
+            return (items, totalCount);
+        }
+
         public async Task<int> SaveAsync() => await _context.SaveChangesAsync();
+
+        public async Task UpdateAsync(Document document)
+        {
+            var documentDomain = await _context.Documents.FirstOrDefaultAsync(d => d.Id == document.Id);
+
+            documentDomain.UserFileName = document.UserFileName;
+            documentDomain.LegalArea = document.LegalArea;
+            documentDomain.IsPublic = document.IsPublic;
+            documentDomain.UpdatedAt = document.UpdatedAt;
+
+            _context.Documents.Update(documentDomain);
+            await Task.CompletedTask; //ef core zaten change tracker üzerindne takip ediyor
+        }
     }
 }
