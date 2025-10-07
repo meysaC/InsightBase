@@ -3,6 +3,7 @@ using InsightBase.Application.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using InsightBase.Api.Mappers;
+using InsightBase.Application.DTOs;
 
 namespace InsightBase.Api.Controllers
 {
@@ -39,21 +40,21 @@ namespace InsightBase.Api.Controllers
             // return Ok(new { DocumentId = documentId });
         }
         //READ LIST
-        // [HttpGet]
-        // public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
-        // {
-        //     var query = new GetDocumentsQueryCommand(page, pageSize);
-        //     var result = await _mediator.Send(query);
-        //     return Ok(result);
-        // }
+        [HttpGet]
+        public async Task<ActionResult<PagedResult<DocumentDto?>>> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            var query = new GetDocumentsQueryCommand(page, pageSize);
+            var result = await _mediator.Send(query);
+            return result;
+        }
         //READ DETAIL
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        public async Task<ActionResult<DocumentDto>> GetById([FromRoute] Guid id)
         {
             var query = new GetDocumentByIdCommand(id);
-            var result = await _mediator.Send(query);
-            if (result == null) return NotFound(); // 404
-            return Ok(result);
+            var dto = await _mediator.Send(query);
+            if (dto == null) return NotFound(); // 404 döndürür
+            return dto; //IActionResult değil e ActionResult yaptığımız için return OK(dto) şeklinde yapmamıza gerek yok
         }
         //UPDATE
         [HttpPut("{id:guid}")]

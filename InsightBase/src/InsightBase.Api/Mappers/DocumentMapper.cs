@@ -5,7 +5,7 @@ using InsightBase.Application.DTOs;
 
 namespace InsightBase.Api.Mappers
 {
-    public class DocumentMapper
+    public class DocumentMapper 
     {
         // public static UpdateDocumentRequest ToDocumentDto(DocumentDto documentDto)
         // {

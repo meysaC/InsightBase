@@ -4,6 +4,7 @@ namespace InsightBase.Application.DTOs
     {
         public Guid Id { get; set; }
         public string FileName { get; set; } = string.Empty;
+        public string UserFileName { get; set; } = string.Empty;
         //public string FilePath { get; set; } = string.Empty;
         public string DocumentType { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
