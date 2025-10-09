@@ -34,3 +34,7 @@ TestResult/
 node_modules/
 .env
 .vscode/
+
+
+# ---- Backup Project ----
+*_backup_*/
