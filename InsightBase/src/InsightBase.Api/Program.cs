@@ -53,6 +53,23 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+
+// app.UseHttpsRedirection();  //
+
+app.UseRouting();
+
+// Frontend bağlantısı ??
+app.UseCors(x => x
+    .WithOrigins("http://localhost:5173")
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()
+);
+// app.UseEndpoints(enpoints => {
+//     enpoints.MapControllers();
+// });
+
+app.UseAuthorization();
+
 app.MapControllers();
 app.Run();
