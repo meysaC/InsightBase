@@ -1,6 +1,7 @@
 using InsightBase.Application.Commands;
 using InsightBase.Application.DTOs;
 using InsightBase.Application.Interfaces;
+using InsightBase.Application.Mapper;
 using MediatR;
 
 namespace InsightBase.Application.Handler
@@ -21,19 +22,22 @@ namespace InsightBase.Application.Handler
                 document.UserFileName = request.FileName ?? document.UserFileName;
                 document.LegalArea = request.LegalArea ?? document.LegalArea;
                 document.IsPublic = request.IsPublic;
-                document.UpdatedAt = DateTime.Now;
+                document.UpdatedAt = DateTime.UtcNow;
 
                 await _documents.UpdateAsync(document);
                 await _documents.SaveAsync();
 
-                return new DocumentDto
-                {
-                    Id = document.Id,
-                    FileName = document.UserFileName,
-                    DocumentType = document.DocumentType,
-                    CreatedAt = document.CreatedAt,
-                    UpdatedAt = document.UpdatedAt
-                };
+                return DocumentMapper.ToDocumentDto(document);
+                // return new DocumentDto
+                // {
+                //     Id = document.Id,
+                //     FileName = document.FileName,
+                //     UserFileName = document.UserFileName,
+                //     FilePath = document.FilePath,
+                //     DocumentType = document.DocumentType,
+                //     CreatedAt = document.CreatedAt,
+                //     UpdatedAt = document.UpdatedAt
+                // };
             }
             catch (Exception ex)
             {

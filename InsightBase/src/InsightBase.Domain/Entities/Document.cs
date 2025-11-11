@@ -10,7 +10,6 @@ namespace InsightBase.Domain.Entities
         [Required]
         public string FilePath { get; set; } = string.Empty; // minio storage 
         public string FileType{ get; set; } = string.Empty;  // .pdf, .docx ...
-       // public string? ContentType { get; set; }
         public long FileSize { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

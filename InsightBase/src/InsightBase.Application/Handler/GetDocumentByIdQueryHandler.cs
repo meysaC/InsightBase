@@ -11,13 +11,15 @@ namespace InsightBase.Application.Handler
     {
         private readonly IDocumentRepository _documentRepo;
         private readonly ILogger<GetDocumentByIdQueryHandler> _logger;
-        public GetDocumentByIdQueryHandler(IDocumentRepository documentRepo, ILogger<GetDocumentByIdQueryHandler> logger)
-            => (_documentRepo, _logger) = (documentRepo, logger);
+         private readonly IStorageService _storage;
+        public GetDocumentByIdQueryHandler(IDocumentRepository documentRepo, ILogger<GetDocumentByIdQueryHandler> logger, IStorageService storage)
+            => (_documentRepo, _logger, _storage) = (documentRepo, logger, storage);
 
         public async Task<DocumentDto> Handle(GetDocumentByIdCommand request, CancellationToken cancellationToken)
         {
             var document = await _documentRepo.GetByIdAsync(request.Id);
             if (document == null) return null;
+            document.FilePath = await _storage.GetPresignedUrlAsync(document.FileName);
             return DocumentMapper.ToDocumentDto(document);
         }
     }

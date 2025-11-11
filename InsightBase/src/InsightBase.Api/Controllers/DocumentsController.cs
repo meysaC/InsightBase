@@ -27,7 +27,9 @@ namespace InsightBase.Api.Controllers
             {
                 UserFileName = request.UserFileName ?? request.File.FileName,
                 FileName = request.File.FileName,
-                FileType = request.File.FileName, //doğru dosya adını alır (.pdf, .docx, .txt uzantısı dahil)
+                DocumentType = request.DocumentType,
+                LegalArea = request.LegalArea,
+                IsPublic = request.IsPublic,
                 Content = memoryStream.ToArray()
             };
 

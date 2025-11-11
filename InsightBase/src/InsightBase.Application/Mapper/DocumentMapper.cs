@@ -12,6 +12,7 @@ namespace InsightBase.Application.Mapper
                 Id = document.Id,
                 FileName = document.FileName,
                 UserFileName = document.UserFileName,
+                FilePath = document.FilePath, 
                 DocumentType = document.DocumentType,
                 CreatedAt = document.CreatedAt,
                 UpdatedAt = document.UpdatedAt,
@@ -19,7 +20,6 @@ namespace InsightBase.Application.Mapper
                 IsPublic = document.IsPublic
             };
             return documentDto;
-
         }
     }
 }

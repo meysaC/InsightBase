@@ -12,7 +12,10 @@ namespace InsightBase.Application.Commands
         public string? UserId { get; set; } = string.Empty;
         public string? UserFileName { get; set; }
         public string FileName { get; set; }
-        public string FileType { get; set; } = null!;
+        //public string FileType { get; set; } = null!;
+        public string? DocumentType { get; set; }
+        public string? LegalArea { get; set; }
+        public bool IsPublic { get; set; }
         public byte[] Content { get; set; } = Array.Empty<byte>();
 
     }
