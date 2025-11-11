@@ -30,7 +30,7 @@ namespace InsightBase.Infrastructure.Services
         }
 
 
-        public async Task<string> UploadAsync(string? fileName, string fileType, byte[] content)
+        public async Task<string> UploadAsync(string fileName, string? userFileName, string fileType, byte[] content)
         {
             try
             {
@@ -38,44 +38,40 @@ namespace InsightBase.Infrastructure.Services
                 bool found = await _client.BucketExistsAsync(new BucketExistsArgs().WithBucket(_bucketName));
                 if (!found) await _client.MakeBucketAsync(new MakeBucketArgs().WithBucket(_bucketName));
 
-                // URL encode the filename to make it ASCII-safe
-                var encodedFileName = fileName != null
-                                    ? Uri.EscapeDataString(fileName)
-                                    : null;
-                //to decode:
-                //var decodedFileName = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encodedFileName));
-
                 var contentType = GetMimeType(fileType);
 
-                // await _client.PutObjectAsync(new PutObjectArgs()
                 var putObjectArgs = new PutObjectArgs()
                                 .WithBucket(_bucketName)
-                                .WithObject(fileType) // object name (dosyanın bucket içindeki adı (key))
+                                .WithObject(fileName) // object name (dosyanın bucket içindeki adı (key)) fileType userFileName
                                 .WithStreamData(new MemoryStream(content))
                                 .WithObjectSize(content.Length)
                                 .WithContentType(contentType); // mime type fileType
 
 
+
+                // URL encode the filename to make it ASCII-safe
+                var encodedFileName = userFileName != null
+                                    ? Uri.EscapeDataString(userFileName)
+                                    : null;
+                //to decode:
+                //var decodedFileName = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encodedFileName));
+
                 // User olduğu zaman user bilgilerini de custom metadata ya ekle!!! -> metadata’ları daha sonra StatObjectAsync çağrısıyla okuyabilirsin.
-                if (encodedFileName != null)
+                putObjectArgs = putObjectArgs.WithHeaders(new Dictionary<string, string>
                 {
-                    putObjectArgs = putObjectArgs.WithHeaders(new Dictionary<string, string>
-                    {
-                        {"x-amz-meta-user-filename", encodedFileName} //fileName
-                        // {"x-amz-meta-uploaded-by", user}
-                    });
-                }
+                    {"x-amz-meta-user-filename", encodedFileName} //userFileName
+                    // {"x-amz-meta-uploaded-by", user}
+                });
 
                 await _client.PutObjectAsync(putObjectArgs);
 
-                return $"{_bucketName}/{fileType}"; //fileName ?? 
+                return $"{_bucketName}/{fileName}"; //fileName ?? 
             }
             catch (Exception ex)
             {
-                throw new Exception($"The document could not be upload to the minio, document name: {fileName}", ex);
+                throw new Exception($"The document could not be upload to the minio, document name: {userFileName}", ex);
             }
         }
-
         public async Task<RemoveResult> RemoveAsync(params string[] fileNames)
         {
             // var list = fileNames?.ToList() ?? new();
@@ -89,7 +85,6 @@ namespace InsightBase.Infrastructure.Services
                     ? await RemoveSingleAsync(fileNames[0], null)
                     : await RemoveBatchAsync(fileNames.ToList(), null);
         }
-
         private async Task<RemoveResult> RemoveSingleAsync(string fileName, string? versionId)
         {
             var result = new RemoveResult();
@@ -161,8 +156,6 @@ namespace InsightBase.Infrastructure.Services
             }
             return result;
         }
-
-
         private async Task<bool> ObjectExistsAsync(string fileName)
         {
             try
@@ -178,24 +171,6 @@ namespace InsightBase.Infrastructure.Services
                 return false;
             }
         }
-
-        // public async Task<bool> RemoveObjectAsync(string fileName, string? versionId = null) //, string versionId -> "versioning" özelliği açılırsa, her dosyanın farklı versiyonları olabilir
-        // {
-        //     try
-        //     {
-        //         var args = new RemoveObjectArgs()
-        //                         .WithBucket(_bucketName)
-        //                         .WithObject(fileName);
-        //         if (!string.IsNullOrEmpty(versionId)) args = args.WithVersionId(versionId);
-        //         await _client.RemoveObjectAsync(args).ConfigureAwait(false);
-        //         return true;
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         throw new Exception($"The file could not be removed file name: {fileName}, bucket name: {_bucketName}", ex);
-        //     }
-        // }
-
         //this returns MIME types, (for HTTP headers)
         private string GetMimeType(string fileType)
         {
@@ -211,6 +186,15 @@ namespace InsightBase.Infrastructure.Services
                 _ => "application/octet-stream"
             };
         }
-
+        public Task<string> GetPresignedUrlAsync(string fileName, int expiryInMinutes = 60)
+        {
+            var url = _client.PresignedGetObjectAsync(
+                             new PresignedGetObjectArgs()
+                             .WithBucket(_bucketName)
+                             .WithObject(fileName)
+                             .WithExpiry(expiryInMinutes * 60) //seconds
+                         );
+            return url;
+        }
     }
 }

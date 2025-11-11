@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using InsightBase.Application.Commands;
 using InsightBase.Application.DTOs;
 using InsightBase.Application.Events;
 using InsightBase.Application.Interfaces;
+using InsightBase.Application.Mapper;
 using InsightBase.Domain.Entities;
 using MediatR;
 
@@ -34,27 +31,36 @@ namespace InsightBase.Application.Handler
             _messageBus = messageBus;
             _textExtraction = textExtraction;
         }
-        public async Task<DocumentDto?> Handle(UploadDocumentCommand request, CancellationToken cancellationToken) //Guid
+        public async Task<DocumentDto?> Handle(UploadDocumentCommand command, CancellationToken cancellationToken) //Guid
         {
-            //minio ya yükle
-            var fileUrl = await _storage.UploadAsync(request.FileName, request.FileType, request.Content);
-            
             var document = new Document
             {
                 Id = Guid.NewGuid(),
-                UserFileName = request.UserFileName,
-                FileName = request.FileName,
-                FilePath = fileUrl,
-                FileType = request.FileType,
-                UserId = string.IsNullOrEmpty(request.UserId) ? null : request.UserId,
+                UserFileName = command.UserFileName,
+                FileName = command.FileName,
+                //FilePath = fileUrl,
+                //FileType = command.FileType,
+                UserId = string.IsNullOrEmpty(command.UserId) ? null : command.UserId,
                 CreatedAt = DateTime.UtcNow,
-                Chunks = new List<DocumentChunk>()
-                //DocumentType = request.FileType, //kanun, yönetmelik, karar...
-                // Checksum = ComputeChecksum(request.Content) // İsteğe bağlı: Dosya bütünlüğü için
+                Chunks = new List<DocumentChunk>(),
+                DocumentType = command.DocumentType, //kanun, yönetmelik, karar...
+                LegalArea = command.LegalArea,
+                IsPublic = command.IsPublic,
+                FileSize = command.Content.LongLength,
+                // Checksum = ComputeChecksum(command.Content) // İsteğe bağlı: Dosya bütünlüğü için
             };
 
+            //pdf, docx mi?
+            var ext = Path.GetExtension(document.FileName).ToLowerInvariant();
+
+            //minio ya yükle
+            var fileUrl = await _storage.UploadAsync(command.FileName, document.UserFileName, ext, command.Content);
+
+            document.FileType = ext;
+            document.FilePath = fileUrl;
+            
             //dosyayı text e çevvir 
-            var text = await _textExtraction.ExtractTextAsync(request.Content, request.FileType);
+            var text = await _textExtraction.ExtractTextAsync(command.Content, command.FileName);
 
             //text i chunk lara böl
             var chunks = _chunking.ChunkText(text, maxTokens: 200); //350 tokenlik chunklar
@@ -72,29 +78,28 @@ namespace InsightBase.Application.Handler
                     EndToken = end,
                     Length = content.Length,
                     CreatedAt = DateTime.UtcNow,
-                    Status = Domain.Enum.ChunkStatus.Pending //başlangıçta pending !!
+                    Status = Domain.Enum.ChunkStatus.Pending // başlangıçta pending !!
                 };
 
                 document.Chunks.Add(chunk);
-                
-                //Embedding üretimi EmbeddingWorker da backgroundService ile
             }
             await _documents.AddAsync(document);
             await _documents.SaveAsync();
 
-            //Kuyruğa embedding job oluşturma mesajı at
+            //Kuyruğa embedding job oluşturma mesajı at (Embedding üretimi EmbeddingWorker da backgroundService ile)
             var job = new EmbeddingJobCreatedEvent(document.Id);
             await _messageBus.PublishAsync("embedding_jobs", job);
 
-            // return document.Id;
-            return new DocumentDto
-            {
-                Id = document.Id,
-                FileName = document.FileName,
-                DocumentType = document.DocumentType,
-                CreatedAt = document.CreatedAt,
-                UpdatedAt = document.UpdatedAt
-            };
+            return DocumentMapper.ToDocumentDto(document);
+            // return new DocumentDto
+            // {
+            //     Id = document.Id,
+            //     FileName = document.FileName,
+            //     FilePath = document.FilePath,
+            //     DocumentType = document.DocumentType,
+            //     CreatedAt = document.CreatedAt,
+            //     UpdatedAt = document.UpdatedAt
+            // };
         }
     }
 }
