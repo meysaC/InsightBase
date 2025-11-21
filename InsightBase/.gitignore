@@ -38,3 +38,7 @@ node_modules/
 
 # ---- Backup Project ----
 *_backup_*/
+
+
+src/InsightBase.Infrastructure/*.txt
+
