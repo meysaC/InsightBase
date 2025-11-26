@@ -29,7 +29,6 @@ namespace InsightBase.Infrastructure.Services
                             .Build();
         }
 
-
         public async Task<string> UploadAsync(string fileName, string? userFileName, string fileType, byte[] content)
         {
             try
@@ -171,8 +170,7 @@ namespace InsightBase.Infrastructure.Services
                 return false;
             }
         }
-        //this returns MIME types, (for HTTP headers)
-        private string GetMimeType(string fileType)
+        private string GetMimeType(string fileType) //this returns MIME types, (for HTTP headers)
         {
             var extension = Path.GetExtension(fileType).ToLowerInvariant();
             return extension switch

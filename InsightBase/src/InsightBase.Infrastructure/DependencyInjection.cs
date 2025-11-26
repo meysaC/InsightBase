@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using InsightBase.Application.Interfaces;
 using InsightBase.Infrastructure.Services;
+using InsightBase.Infrastructure.Services.QueryAnalyzer;
 using InsightBase.Infrastructure.Repositories;
 using OpenAI.Extensions;
 using Minio;
@@ -63,7 +64,7 @@ namespace InsightBase.Infrastructure
             services.AddScoped<IRedisCacheService, RedisCacheService>();
             services.AddSingleton<IMessageBus, RabbitMqMessageBus>();
             services.AddHostedService<EmbeddingWorker>(); //HostedService kendiliğinden Singleton gibi davranır
-
+            
             return services;
         }
 

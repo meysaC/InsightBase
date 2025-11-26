@@ -6,6 +6,7 @@ using InsightBase.Infrastructure;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using InsightBase.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,10 @@ builder.Configuration.AddEnvironmentVariables(); // 2. Environment değişkenler
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
+// services.AddQueryAnalyzer(builder.Configuration);
+builder.Services.AddQueryAnalyzerWithProvider(builder.Configuration);
+
 
 builder.Services.AddControllers();
 
