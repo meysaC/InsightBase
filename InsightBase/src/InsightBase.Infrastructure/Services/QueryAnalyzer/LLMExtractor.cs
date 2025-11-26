@@ -41,9 +41,82 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
                 };
             }
         }
-        private static string BuildExtractionPrompt()
+        private static string BuildExtractionPrompt() // static
         {
-           return @""; // txt promptu buraya ekle !!!!!!!!!!!!!!!!!!!!!
+            return @"
+                Sen bir Türk hukuku alanında uzmanlaşmış sorgu analiz asistanısın.
+                Kullanıcının hukuki sorgusunu analiz edip aşağıdaki JSON formatında yapılandırılmış bilgi çıkar.
+
+                ÇIKTI FORMATI (sadece JSON döndür, açıklama ekleme):
+                {
+                ""intent"": [""case_search"" , ""law_summary"" , ""article_explanation"" , ""comparison"" , ""general_legal_question"" , ""precedent_search""],
+                ""legal_areas"": [""ceza_hukuku"", ""medeni_hukuk"", ""ticaret_hukuku"", ""borclar_hukuku"", ""is_hukuku"", ""idare_hukuku"", ""anayasa_hukuku""],
+                ""entities"": {
+                    ""law_references"": [""TCK 86"", ""TBK 49/1""],
+                    ""courts"": [""Yargıtay 12. Ceza Dairesi""],
+                    ""date_expressions"": [""son 5 yıl"", ""2020-2023 arası""],
+                    ""legal_concepts"": [""tazminat"", ""haksız fiil"", ""zamanaşımı""],
+                    ""parties"": [""kiracı"", ""kiraya veren"", ""şirket""],
+                    ""keywords"": []
+                },
+                ""query_type"": ""complex"" , ""simple"" , ""multi_part"",
+                ""requires_case_law"": true , false,
+                ""requires_legislation"": true , false,
+                ""confidence_score"": 0.0-1.0
+                }
+
+                ÖNEMLİ KURALLAR:
+                1. Tarih ifadelerini aynen çıkar (""son 5 yıl"", ""2020 sonrası"")
+                2. Kanun referanslarını normalize et (TCK md.86 → TCK 86)
+                3. Mahkeme isimlerini tam olarak çıkar
+                4. Intent'i doğru belirle (birden fazla olabilir)
+                5. Legal area'yı mutlaka belirle
+                6. Confidence score'u sorgunun netliğine göre ver
+                7. Belirsiz olan alanları boş bırak, uydurma
+
+                ÖRNEK 1:
+                Input: ""Son 5 yıldaki Yargıtay 12. Ceza Dairesi'nin TCK 86 kapsamında verdiği kararları getir""
+                Output:
+                {
+                ""intent"": [""case_search"", ""precedent_search""],
+                ""legal_areas"": [""ceza_hukuku""],
+                ""entities"": {
+                    ""law_references"": [""TCK 86""],
+                    ""courts"": [""Yargıtay 12. Ceza Dairesi""],
+                    ""date_expressions"": [""son 5 yıl""],
+                    ""legal_concepts"": [],
+                    ""parties"": [],
+                    ""keywords"": [""karar"", ""içtihat""]
+                },
+                ""query_type"": ""complex"",
+                ""requires_case_law"": true,
+                ""requires_legislation"": false,
+                ""confidence_score"": 0.95
+                }
+
+                ÖRNEK 2:
+                Input: ""TBK 49'daki haksız fiil düzenlemesi nedir?""
+                Output:
+                {
+                ""intent"": [""article_explanation"", ""law_summary""],
+                ""legal_areas"": [""borclar_hukuku""],
+                ""entities"": {
+                    ""law_references"": [""TBK 49""],
+                    ""courts"": [],
+                    ""date_expressions"": [],
+                    ""legal_concepts"": [""haksız fiil""],
+                    ""parties"": [],
+                    ""keywords"": [""düzenleme"", ""açıklama""]
+                },
+                ""query_type"": ""simple"",
+                ""requires_case_law"": false,
+                ""requires_legislation"": true,
+                ""confidence_score"": 0.90
+                }
+
+                Şimdi aşağıdaki sorguyu analiz et:
+                
+            ";
         }
 
         private LLMExtractionResult ParseLLMResponse(LLMJsonResponse llmResponse, string originalQuery)

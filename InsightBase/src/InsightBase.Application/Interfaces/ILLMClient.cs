@@ -4,6 +4,6 @@ namespace InsightBase.Application.Interfaces
 {
     public interface ILLMClient
     {
-        Task<LLMJsonResponse> GenerateJsonResponseAsync(string instruction, string input, CancellationToken cancellationToken = default);
+        Task<LLMJsonResponse> GenerateJsonResponseAsync(string instruction, string input, CancellationToken cancellationToken = default); //
     }
 }

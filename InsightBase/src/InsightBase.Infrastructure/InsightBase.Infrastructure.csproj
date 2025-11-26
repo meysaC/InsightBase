@@ -30,6 +30,7 @@
     <PackageReference Include="StackExchange.Redis" Version="2.8.24" />
     <PackageReference Include="System.Threading.RateLimiting" Version="9.0.9" />
     <PackageReference Include="UglyToad.PdfPig" Version="1.7.0-custom-5" />
+    <EmbeddedResource Include="LLMExtractorPrompt.txt" />
   </ItemGroup>
 
 

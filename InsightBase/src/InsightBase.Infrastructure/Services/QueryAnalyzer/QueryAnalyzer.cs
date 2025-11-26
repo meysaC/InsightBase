@@ -71,7 +71,6 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
                 return new RegexExtractionResult { OriginalQuery = query };
             }
         }
-
         private async Task<LLMExtractionResult> ExtractWithLLMAsync(string query, CancellationToken cancellationToken) // semantik analiz
         {
             try
@@ -89,10 +88,8 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
                     ErrorMessage = ex.Message
                 };
             }
-        }
-
-        // Regex öncelikli, LLM ile zenginleştir
-        private void MergeResults(QueryContext context, RegexExtractionResult regexResult, LLMExtractionResult llmResult)
+        }    
+        private void MergeResults(QueryContext context, RegexExtractionResult regexResult, LLMExtractionResult llmResult) // Regex öncelikli, LLM ile zenginleştir
         {
             // Law References - Regex öncelikli
             context.LawReferences = MergeLists(
@@ -142,7 +139,6 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
                 context.Source.Warnings.Add($"LLM extraction failed: {llmResult.ErrorMessage}");
             }
         }
-
         private List<string> MergeLists(List<string> lawRefs1, List<string> lawRefs2, bool preferFirst = true)
         {
             if(preferFirst && lawRefs1.Any())
@@ -155,8 +151,6 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToList();
         }
-
-
         private void PostProcessContext(QueryContext context) // contexti son process den geçir
         {
             // intent yoksa default veriliyor
@@ -183,8 +177,8 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
         }
 
 
-        // context den legal area belirleniyor 
-        private List<string> DetectLegalAreasFromContext(QueryContext context)
+       
+        private List<string> DetectLegalAreasFromContext(QueryContext context) // context den legal area belirleniyor 
         {
             var areas = new List<string>();
 
@@ -203,8 +197,6 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
             }
             return areas.Distinct().ToList();
         }
-
-
         private void DetermineSearchStrategy(QueryContext context)
         {
             // exact match gerekli mi
@@ -224,7 +216,6 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
                 context.RequiresLegislation = true;
             }
         }
-        // confidence score düzelt 
         private void AdjustConfidenceScore(QueryContext context)
         {
             // eğer regex den kesin bilgi geldiyse confidence arttır

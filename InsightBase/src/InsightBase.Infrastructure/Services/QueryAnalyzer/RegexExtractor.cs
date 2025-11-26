@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace InsightBase.Infrastructure.Services.QueryAnalyzer
 {
-    public partial class RegexExtractor  // Deterministik regex tabanlı bilgi çıkarımı yapan servis. 
+    public partial class RegexExtractor  // Deterministik regex tabanlı yapısal bilgi çıkarımı yapan servis. 
                                 // Kanun referansları, tarih aralıkları, mahkeme bilgileri vb. çıkarır.
     {
         [GeneratedRegex(@"(?:(TCK|TBK|CMK|HMK|TMK|İİK|TTK|VUK|SGK|İş\s+Kanunu|Anayasa)\s*(?:md\.?|madde)?\s*(\d+)(?:[\/\-](\d+))?(?:[\/\-]([a-zçğıöşü]+))?)", 
@@ -54,7 +54,7 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
             result.LawReferences = ExtractLawReferences(query);
             
             // Tarih aralıklarını çıkar
-            ExtractDateRange(query, result);
+            ExtractDateRange(query, result); // method içerisinde RegexExtractionResult.StartDate-EndDate eşitleniyor
             
             // Mahkeme bilgilerini çıkar
             result.Courts = ExtractCourts(query);
@@ -71,10 +71,11 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
 
         private List<string> ExtractLawReferences(string query) //Kanun referanslarını çıkarır (TCK 86, TBK 49/1-a gibi)
         {
+            // Bu: eşleşmeleri al (LawReferencePattern.Matches), her birini normalize et (Select(NormalizeLawReference)) (string’e çevir), tekrarlardan kurtul (Distinct), listele
             var lafReferances = LawReferencePattern()
                                 .Matches(query)
                                 .Select(m => NormalizeLawReference(m))
-                                .Distinct(StringComparer.OrdinalIgnoreCase)
+                                .Distinct(StringComparer.OrdinalIgnoreCase) // Distinct() LINQ yöntemi koleksiyondaki tekrarları kaldırır
                                 .ToList();  
             return lafReferances;
         }
@@ -128,12 +129,23 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
         private static DateTime? ParseDate(Match match) // Tarihleri DateTime formatına dönüştürür
         {
             try
-            {
+            {                
                 int year = int.Parse(match.Groups[1].Value);
                 int month = int.Parse(match.Groups[2].Value);
                 int day = int.Parse(match.Groups[3].Value);
 
                 return new DateTime(year, month, day);
+
+                // if (!int.TryParse(match.Groups[1].Value, out var year) ||
+                // !int.TryParse(match.Groups[2].Value, out var month) ||
+                // !int.TryParse(match.Groups[3].Value, out var day))
+                // return null;
+
+                // if (month < 1 || month > 12 || day < 1 || day > DateTime.DaysInMonth(year, month))
+                //     return null;
+
+                // return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
+
             }
             catch
             {

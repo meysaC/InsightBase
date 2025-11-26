@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using InsightBase.Application.Interfaces;
 using InsightBase.Application.Models;
@@ -14,13 +15,16 @@ using UglyToad.PdfPig.Logging;
 
 namespace InsightBase.Infrastructure.Services.QueryAnalyzer
 {
-    public class LLMClient : ILLMClient // LLM API ile iletişim kurar (with retry logic, circuit breaker and error handling)
+    public class LLMClient : ILLMClient // di üzerinden gelen HttpClient ile istek atıyor, Polly kullanarak transient (geçici) hatalarda tekrar deniyor 
+                                        // ve API’den dönen JSON’u valide edip düzenli bir forma çeviriyor
+
+                                        // LLM API ile iletişim kurar (with retry logic, circuit breaker and error handling)
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger<LLMClient> _logger;
         private readonly JsonSerializerOptions _jsonOptions;
 
-        private readonly IAsyncPolicy<HttpResponseMessage> _retryPolicy; //retry pol
+        // private readonly IAsyncPolicy<HttpResponseMessage> _retryPolicy; 
 
         public LLMClient(HttpClient httpClient, ILogger<LLMClient> logger)
         {
@@ -29,27 +33,28 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
 
             _jsonOptions = new JsonSerializerOptions
             {
-              PropertyNameCaseInsensitive = true,
+              PropertyNameCaseInsensitive = true, //JSON’daki key’ler büyük/küçük harfe takılmaz
               WriteIndented = false,
-              DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+              DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull // null döndürmez
             };
 
-            // retry policy 3 deneme, exponential backoff
-            _retryPolicy = HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .OrResult(r => r.StatusCode == HttpStatusCode.TooManyRequests)
-                .WaitAndRetryAsync(
-                    retryCount: 3,
-                    sleepDurationProvider: retryAttempt => 
-                        TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), // 2, 4, 8 saniye
-                    onRetry: (outcome, timespan, retryCount, context) =>
-                    {
-                        _logger.LogWarning("LLMClient LLM API: Deneme {RetryCount} - {StatusCode}. Sonraki deneme {Delay} saniye sonra. {Message}",
-                            retryCount,
-                            outcome.Result?.StatusCode,
-                            timespan.TotalSeconds,
-                            outcome.Exception?.Message ?? outcome.Result?.ReasonPhrase);
-                    });
+            // // retry policy 3 deneme, exponential backoff
+            // // HandleTransientHttpError() retry çalıştırır -> 5xx hata kodları, 408 Timeout, HttpRequestException
+            // _retryPolicy = HttpPolicyExtensions
+            //     .HandleTransientHttpError()
+            //     .OrResult(r => r.StatusCode == HttpStatusCode.TooManyRequests) //LLM API’leri rate-limit yaptığı için 429 hatası özel eklendi
+            //     .WaitAndRetryAsync(
+            //         retryCount: 3,
+            //         sleepDurationProvider: retryAttempt => 
+            //             TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), // Exponential backoff (sistemi yormadan yeniden deneme) -> 2, 4, 8 saniye
+            //         onRetry: (outcome, timespan, retryCount, context) => // Retrylerin neden, kaçıncı denemede yapıldığını kaydediyor
+            //         {
+            //             _logger.LogWarning("LLMClient LLM API: Deneme {RetryCount} - {StatusCode}. Sonraki deneme {Delay} saniye sonra. {Message}",
+            //                 retryCount,
+            //                 outcome.Result?.StatusCode,
+            //                 timespan.TotalSeconds,
+            //                 outcome.Exception?.Message ?? outcome.Result?.ReasonPhrase);
+            //         });
         }
 
 
@@ -61,29 +66,41 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
 
             try
             {
-                // Polly retry ile policy istek at
-                var response = await _retryPolicy.ExecuteAsync(async () =>
-                {
-                    using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                    cts.CancelAfter(TimeSpan.FromSeconds(30)); // 30 saniye timeout
+                // HttpClient policy (retry + circuit breaker) hali hazırda di ile uygulandı
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                cts.CancelAfter(TimeSpan.FromSeconds(30));
 
-                    return await _httpClient.PostAsJsonAsync(
-                        "/api/llm/generate-json", 
-                        requestBody, 
-                        _jsonOptions, 
-                        cts.Token
-                    );
-                });
+                // Http isteği
+                // var response = await _httpClient.PostAsJsonAsync( // System.Net.Http.Json package’ından gelir -> JSON serialize etmeyi otomatik yapar
+                //         "responses",
+                //         requestBody, 
+                //         _jsonOptions, 
+                //         cts.Token
+                //     );
+
+                var json = JsonSerializer.Serialize(requestBody, _jsonOptions);
+                _logger.LogDebug("LLMClient LLM request body: {RequestBody}", json);
+
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync("chat/completions", content, cts.Token); //responses
+
+                // hata durumunda detaylı log
+                if(!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogError("LLMClient LLM API Error: {StatusCode} - {ErrorContent}", response.StatusCode, errorContent);
+                    response.EnsureSuccessStatusCode();
+                }
 
                 return await ProcessResponse(response, cancellationToken);
                 
             }
-            catch (TaskCanceledException ex)
+            catch (TaskCanceledException ex) // Timeout veya kullanıcı tarafından istek iptal edilmesi
             {
                 _logger.LogError(ex, "LLMClient GenerateJsonResponseAsync: İstek zaman aşımına uğradı veya iptal edildi.");
                 throw new TimeoutException("LLMClient GenerateJsonResponseAsync: İstek zaman aşımına uğradı veya iptal edildi.", ex);
             }
-            catch (HttpRequestException ex)
+            catch (HttpRequestException ex) // Network error, DNS error, unreachable host, vs
             {
                 _logger.LogError(ex, "LLMClient GenerateJsonResponseAsync: LLM API isteği sırasında beklenmeyen bir hata oluştu.");
                 throw new ApplicationException("LLMClient GenerateJsonResponseAsync: LLM API isteği sırasında beklenmeyen bir hata oluştu.", ex);
@@ -111,15 +128,15 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
         {
             return new
             {
-                instruction = instruction,
-                input = input,
-                model = "gpt-4o-mini", // daha hızlı ve ucuz
-                max_tokens = 1000, // yanıt için token limiti
-                temperature = 0.1, // daha tutarlı yanıtlar için düşük sıcaklık
-                reponse_format = new { type = "json_object"}, // JSON formatında yanıt al
-                top_p = 0.95,
-                frequency_penalty = 0.0,
-                presence_penalty = 0.0
+                model = "gpt-4o-mini", //gpt-4.1-mini
+                messages = new []
+                {
+                    new { role = "system", content = instruction },
+                    new { role = "user", content = input }
+                },
+                response_format = new { type = "json_object" },
+                max_tokens = 1000,
+                temperature = 0.1
             };
         }
 
@@ -144,7 +161,8 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
             // json validation
             try
             {
-                var testParse = JsonDocument.Parse(jsonResponse);
+                // AI kaynaklı servislerde mutlaka JSON validasyon yapılmalı 
+                var testParse = JsonDocument.Parse(jsonResponse); // JSON valid mi, kırık mı...
                 testParse.Dispose();
             }
             catch (JsonException ex)
@@ -177,7 +195,7 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
         {
             switch(rootElement.ValueKind)
             {
-                case JsonValueKind.Object:
+                case JsonValueKind.Object: // her property i gezer → key → value
                     foreach (var property in rootElement.EnumerateObject())
                     {
                         var key = string.IsNullOrEmpty(prefix)
@@ -186,7 +204,7 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
                         ExtractFieldsRecursive(property.Value, key, fields);
                     }
                     break;
-                case JsonValueKind.Array:
+                case JsonValueKind.Array: // diziyi string listesine çevirir
                     var arrayValues = rootElement.EnumerateArray()
                                     .Select(e => e.ToString())
                                     .ToList();

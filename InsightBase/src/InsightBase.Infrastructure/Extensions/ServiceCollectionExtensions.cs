@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
 using System.Net.Http;
+using System.Net.Http.Headers;
 
 
 namespace InsightBase.Infrastructure.Extensions
@@ -24,12 +25,19 @@ namespace InsightBase.Infrastructure.Extensions
             services.AddHttpClient<ILLMClient, LLMClient>(client =>
             {
                 client.BaseAddress = new Uri(llmApiUrl);
-                client.Timeout = TimeSpan.FromSeconds(llmTimeout);
+                client.Timeout = TimeSpan.FromSeconds(llmTimeout); // HttpClient için üst seviye timeout
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
 
-                var apiKey = configuration["OpenAI__ApiKey"];
+                var apiKey = configuration["OpenAI:ApiKey"]; //OpenAI__ApiKey
                 if(!string.IsNullOrWhiteSpace(apiKey))
-                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+                {
+                    // client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}"); 
+                    // OpenAI API bazı client’larda bu formatı strict kontrol eder ve Add() yerine AuthenticationHeaderValue ister !!!!!
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", apiKey);
+
+                }
+
             })
             .AddPolicyHandler(GetRetryPolicy(llmRetrycount))
             .AddPolicyHandler(GetCircuitBreakerPolicy(configuration));
@@ -45,6 +53,7 @@ namespace InsightBase.Infrastructure.Extensions
             var failures = config.GetValue<int>("LLM_CIRCUIT_BREAKER_FAILURE_THRESHOLD", 5);
             var breakSeconds = config.GetValue<int>("LLM_CIRCUIT_BREAK_DURATION_SECONDS", 30);
 
+            // Eğer LLM API art arda X kez hata verirse → circuit “Open” durumuna geçer -> 30 saniye boyunca hiç istek gönderilmez.
             return HttpPolicyExtensions
                     .HandleTransientHttpError()
                     .CircuitBreakerAsync(
@@ -64,12 +73,14 @@ namespace InsightBase.Infrastructure.Extensions
 
         private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(int llmRetrycount)
         {
+            // retry policy 3 deneme, exponential backoff
+            // HandleTransientHttpError() retry çalıştırır -> 5xx hata kodları, 408 Timeout, HttpRequestException
             return HttpPolicyExtensions
                     .HandleTransientHttpError()
-                    .OrResult(r => r.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+                    .OrResult(r => r.StatusCode == System.Net.HttpStatusCode.TooManyRequests) //LLM API’leri rate-limit yaptığı için 429 hatası özel eklendi
                     .WaitAndRetryAsync(
-                        llmRetrycount,
-                        retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                        retryCount: llmRetrycount,
+                        sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), // Exponential backoff (sistemi yormadan yeniden deneme) -> 2, 4, 8 saniye
                         onRetry: (outcome, timespan, retryAttempt, context) =>
                         {
                             Console.WriteLine($"Retry {retryAttempt} after {timespan.TotalSeconds}s due to {outcome.Exception?.Message ?? outcome.Result?.ReasonPhrase}");
