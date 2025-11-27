@@ -17,7 +17,6 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
 {
     public class LLMClient : ILLMClient // di üzerinden gelen HttpClient ile istek atıyor, Polly kullanarak transient (geçici) hatalarda tekrar deniyor 
                                         // ve API’den dönen JSON’u valide edip düzenli bir forma çeviriyor
-
                                         // LLM API ile iletişim kurar (with retry logic, circuit breaker and error handling)
     {
         private readonly HttpClient _httpClient;
@@ -70,19 +69,11 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
                 using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
                 cts.CancelAfter(TimeSpan.FromSeconds(30));
 
-                // Http isteği
-                // var response = await _httpClient.PostAsJsonAsync( // System.Net.Http.Json package’ından gelir -> JSON serialize etmeyi otomatik yapar
-                //         "responses",
-                //         requestBody, 
-                //         _jsonOptions, 
-                //         cts.Token
-                //     );
-
                 var json = JsonSerializer.Serialize(requestBody, _jsonOptions);
                 _logger.LogDebug("LLMClient LLM request body: {RequestBody}", json);
 
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync("chat/completions", content, cts.Token); //responses
+                var response = await _httpClient.PostAsync("chat/completions", content, cts.Token);
 
                 // hata durumunda detaylı log
                 if(!response.IsSuccessStatusCode)
@@ -93,7 +84,6 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
                 }
 
                 return await ProcessResponse(response, cancellationToken);
-                
             }
             catch (TaskCanceledException ex) // Timeout veya kullanıcı tarafından istek iptal edilmesi
             {
@@ -172,11 +162,27 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
             }
 
 
+            var apiResponse = JsonSerializer.Deserialize<JsonElement>(jsonResponse, _jsonOptions);
+            var contentJson = apiResponse
+                            .GetProperty("choices")[0]
+                            .GetProperty("message")
+                            .GetProperty("content")
+                            .GetString() ?? string.Empty;
+            _logger.LogDebug("LLMClient ProcessResponse çıkarılan content: {Content}", contentJson);
+
+            // content temizleniyor, bazen llm markdown code block ile sarabilir
+            contentJson = contentJson.Trim();
+            if(contentJson.StartsWith("```json")) contentJson = contentJson.Substring(7);
+            if(contentJson.StartsWith("```")) contentJson = contentJson.Substring(3);
+            if(contentJson.EndsWith("```")) contentJson = contentJson.Substring(0, contentJson.Length - 3);
+            contentJson = contentJson.Trim();
+
             var fields = new Dictionary<string, string>();
             try
             {
-                using var doc = JsonDocument.Parse(jsonResponse);
-                ExtractFieldsRecursive(doc.RootElement, "", fields);
+                // using var doc = JsonDocument.Parse(jsonResponse);
+                var contentElement = JsonSerializer.Deserialize<JsonElement>(contentJson, _jsonOptions);
+                ExtractFieldsRecursive(contentElement, string.Empty, fields); //doc.RootElement, ""
             }
             catch (Exception ex)
             {
@@ -185,7 +191,7 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
 
             return new LLMJsonResponse
             {
-                RawJson = jsonResponse,
+                RawJson = contentJson, // jsonResponse SADECE CONTENT JSON KAYDEDİLİYOR
                 Fields = fields,
                 Timestamp = DateTime.UtcNow
             };
