@@ -12,7 +12,7 @@ namespace InsightBase.Application.Models
         public List<string> LegalConcepts { get; set; } = new();
         public List<string> Parties { get; set; } = new(); //hangi taraf olunduğu
         public List<string> Keywords { get; set; } = new();
-        public QueryType QueryType { get; set; }
+        public string QueryType { get; set; } //QueryType
         public bool RequiresCaseLaw { get; set; }
         public bool RequiresLegislation { get; set; }
         public double ConfidenceScore { get; set; }

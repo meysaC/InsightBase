@@ -11,7 +11,7 @@ namespace InsightBase.Application.Models
 
         // Intent and Type
         public List<string> Intents { get; set; } = new();
-        public QueryType QueryType { get; set; } = QueryType.Unknown; // ??????????????????????? -> llmextractor prompt şu şekilde!!!-> ""complex"" | ""simple"" | ""multi_part""
+        public string QueryType { get; set; } = "simple"; //QueryType QueryType.Unknown??????????????????????? -> llmextractor prompt şu şekilde!!!-> ""complex"" | ""simple"" | ""multi_part""
         public double ConfidenceScore { get; set; } = 0.0;
 
 

@@ -193,7 +193,7 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
                 else if(lawRefs.StartsWith("TMK", StringComparison.OrdinalIgnoreCase))
                     areas.Add("medeni_hukuku");
                 else if(lawRefs.StartsWith("İş Kanunu", StringComparison.OrdinalIgnoreCase))
-                    areas.Add("cis_hukuku");
+                    areas.Add("is_hukuku");
             }
             return areas.Distinct().ToList();
         }

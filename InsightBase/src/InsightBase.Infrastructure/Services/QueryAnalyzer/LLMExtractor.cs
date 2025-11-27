@@ -59,7 +59,7 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
                     ""parties"": [""kiracı"", ""kiraya veren"", ""şirket""],
                     ""keywords"": []
                 },
-                ""query_type"": ""complex"" , ""simple"" , ""multi_part"",
+                ""query_type"": ""complex"" , ""simple"" , ""multi_part"" ,
                 ""requires_case_law"": true , false,
                 ""requires_legislation"": true , false,
                 ""confidence_score"": 0.0-1.0
@@ -165,7 +165,12 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
             // Query_type alanını işle
             if(jsonDoc.TryGetProperty("query_type", out var queryTypeElement))
             {
-                // result.QueryType = queryTypeElement.GetString();
+                result.QueryType = queryTypeElement.GetString();
+                // if(queryTypeElement.GetString() == "semantic") result.QueryType = 1;
+                // else if(queryTypeElement.GetString() == "keyword") result.QueryType = 2;
+                // else if(queryTypeElement.GetString() == "structured") result.QueryType = 0;
+                // else if(queryTypeElement.GetString() == "hybrid") result.QueryType = 0;
+                // result.QueryType = 0;
             }
 
             // boolean flags
@@ -204,27 +209,27 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
 
             if (entitiesElement.TryGetProperty("courts", out var courtsElement))
             {
-                result.LawReferences = ParseStringArray(courtsElement);
+                result.Courts = ParseStringArray(courtsElement);
             }
 
             if (entitiesElement.TryGetProperty("date_expressions", out var dateExprElement))
             {
-                result.LawReferences = ParseStringArray(dateExprElement);
+                result.DateExpressions = ParseStringArray(dateExprElement);
             }
 
             if (entitiesElement.TryGetProperty("legal_concepts", out var legalConceptsElement))
             {
-                result.LawReferences = ParseStringArray(legalConceptsElement);
+                result.LegalConcepts = ParseStringArray(legalConceptsElement);
             }
 
             if (entitiesElement.TryGetProperty("parties", out var partiesElement))
             {
-                result.LawReferences = ParseStringArray(partiesElement);
+                result.Parties = ParseStringArray(partiesElement);
             }
 
             if (entitiesElement.TryGetProperty("keywords", out var keywordsElement))
             {
-                result.LawReferences = ParseStringArray(keywordsElement);
+                result.Keywords = ParseStringArray(keywordsElement);
             }
         }
 
