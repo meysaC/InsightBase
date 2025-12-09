@@ -76,5 +76,25 @@ namespace InsightBase.Infrastructure.Repositories
             _context.Documents.Update(documentDomain);
             await Task.CompletedTask; //ef core zaten change tracker üzerindne takip ediyor
         }
+
+        public Task<bool> IsGlobalAsync(string documentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UserHasDirectAccessAsync(string userId, string documentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UserHasOrgAccessAsync(string userId, string documentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UserHasRoleAccessAsync(string userId, string documentId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

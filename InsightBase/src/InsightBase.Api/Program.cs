@@ -7,6 +7,8 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using InsightBase.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,10 +17,9 @@ builder.Configuration.AddEnvironmentVariables(); // 2. Environment değişkenler
 
 // Application ve Infrastructure katmanlarını ekle
 builder.Services.AddApplication();
+
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
-
-// services.AddQueryAnalyzer(builder.Configuration);
 builder.Services.AddQueryAnalyzerWithProvider(builder.Configuration);
 
 
@@ -41,6 +42,34 @@ builder.Services.AddSwaggerGen(option =>
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "InsigthBase Demo", Version = "v1" });
 
 });
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options => {
+   options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"])),
+        ValidateLifetime = true
+    };
+   
+   options.Events = new JwtBearerEvents
+   {
+      OnAuthenticationFailed = context =>
+      {
+        Console.WriteLine($"JWT Authentication failed: {context.Exception.Message}");
+        return Task.CompletedTask;
+      }
+    };    
+});
+
 
 var app = builder.Build();
 

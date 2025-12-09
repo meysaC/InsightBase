@@ -1,20 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using InsightBase.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using InsightBase.Application.Interfaces;
 using InsightBase.Infrastructure.Services;
-using InsightBase.Infrastructure.Services.QueryAnalyzer;
 using InsightBase.Infrastructure.Repositories;
 using OpenAI.Extensions;
 using Minio;
 using InsightBase.Infrastructure.Workers;
+using InsightBase.Infrastructure.Services.Search;
+using InsightBase.Infrastructure.Services.RAG;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace InsightBase.Infrastructure
 {
@@ -28,6 +24,7 @@ namespace InsightBase.Infrastructure
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(conn, npg => npg.UseVector())
             );
+            
             services.AddIdentityCore<ApplicationUser>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -38,6 +35,36 @@ namespace InsightBase.Infrastructure
             })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>();
+            
+            // services.AddAuthentication(options =>
+            // {
+            //     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            //     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            // })
+            // .AddJwtBearer(options =>
+            // {
+            //     options.TokenValidationParameters = new TokenValidationParameters
+            //     {
+            //         ValidateIssuer = true,
+            //         ValidIssuer = issuer,
+            //         ValidateAudience = true,
+            //         ValidAudience = audience,
+            //         ValidateIssuerSigningKey = true,
+            //         IssuerSigningKey = new SymmetricSecurityKey(
+            //             Encoding.UTF8.GetBytes(signingKey)),
+            //         ValidateLifetime = true
+            //     };
+
+            //     options.Events = new JwtBearerEvents
+            //     {
+            //         OnAuthenticationFailed = context =>
+            //         {
+            //             Console.WriteLine($"JWT Authentication failed: {context.Exception.Message}");
+            //             return Task.CompletedTask;
+            //         }
+            //     };
+            // });
             // JWT authentication ayarları burada eklenebilir (services.AddAuthentication... gibi)
             return services;
         }
@@ -48,10 +75,10 @@ namespace InsightBase.Infrastructure
         // daha az memory footprint.
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddOpenAIService(options =>
-            {
-                options.ApiKey = configuration["OpenAI:ApiKey"];
-            });
+            // services.AddOpenAIService(options =>
+            // {
+            //     options.ApiKey = configuration["OpenAI:ApiKey"];
+            // });
 
             services.AddScoped<IEmbeddingService, EmbeddingService>();
             services.AddScoped<VectorDbService>();
@@ -64,6 +91,11 @@ namespace InsightBase.Infrastructure
             services.AddScoped<IRedisCacheService, RedisCacheService>();
             services.AddSingleton<IMessageBus, RabbitMqMessageBus>();
             services.AddHostedService<EmbeddingWorker>(); //HostedService kendiliğinden Singleton gibi davranır
+            services.AddScoped<IHybridSearchService, HybridSearchService>();
+            services.AddScoped<IAnswerValidator, AnswerValidator>();
+            services.AddScoped<IPromptBuilder, PromptBuilder>();
+
+
             
             return services;
         }

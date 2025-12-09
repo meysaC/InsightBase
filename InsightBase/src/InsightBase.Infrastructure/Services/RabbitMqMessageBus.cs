@@ -1,9 +1,10 @@
 using System.Data;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using InsightBase.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -44,7 +45,7 @@ namespace InsightBase.Infrastructure.Services
                                 autoDelete: false,
                                 arguments: null);
 
-            var json = JsonConvert.SerializeObject(message);
+            var json = JsonSerializer.Serialize(message); //JsonConvert.SerializeObject(message)
             var body = Encoding.UTF8.GetBytes(json);
             
             channel.BasicPublish(exchange: "",
@@ -70,7 +71,7 @@ namespace InsightBase.Infrastructure.Services
                 {
                     var body = ea.Body.ToArray();
                     var json = Encoding.UTF8.GetString(body);
-                    var message = JsonConvert.DeserializeObject<T>(json);
+                    var message = JsonSerializer.Deserialize<T>(json); // JsonConvert.DeserializeObject<T>(json)
                     if (message == null)
                     {
                         _logger.LogWarning("Received null message on {QueueName}", queueName);
