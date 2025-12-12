@@ -35,37 +35,6 @@ namespace InsightBase.Infrastructure
             })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>();
-            
-            // services.AddAuthentication(options =>
-            // {
-            //     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            //     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            // })
-            // .AddJwtBearer(options =>
-            // {
-            //     options.TokenValidationParameters = new TokenValidationParameters
-            //     {
-            //         ValidateIssuer = true,
-            //         ValidIssuer = issuer,
-            //         ValidateAudience = true,
-            //         ValidAudience = audience,
-            //         ValidateIssuerSigningKey = true,
-            //         IssuerSigningKey = new SymmetricSecurityKey(
-            //             Encoding.UTF8.GetBytes(signingKey)),
-            //         ValidateLifetime = true
-            //     };
-
-            //     options.Events = new JwtBearerEvents
-            //     {
-            //         OnAuthenticationFailed = context =>
-            //         {
-            //             Console.WriteLine($"JWT Authentication failed: {context.Exception.Message}");
-            //             return Task.CompletedTask;
-            //         }
-            //     };
-            // });
-            // JWT authentication ayarları burada eklenebilir (services.AddAuthentication... gibi)
             return services;
         }
         
@@ -75,10 +44,10 @@ namespace InsightBase.Infrastructure
         // daha az memory footprint.
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // services.AddOpenAIService(options =>
-            // {
-            //     options.ApiKey = configuration["OpenAI:ApiKey"];
-            // });
+            services.AddOpenAIService(options =>
+            {
+                options.ApiKey = configuration["OpenAI:ApiKey"];
+            });
 
             services.AddScoped<IEmbeddingService, EmbeddingService>();
             services.AddScoped<VectorDbService>();
@@ -94,8 +63,10 @@ namespace InsightBase.Infrastructure
             services.AddScoped<IHybridSearchService, HybridSearchService>();
             services.AddScoped<IAnswerValidator, AnswerValidator>();
             services.AddScoped<IPromptBuilder, PromptBuilder>();
-
-
+            services.AddScoped<IVectorSearchService, VectorSearchService>();
+            services.AddScoped<IKeywordSearchService, KeywordSearchService>();
+            services.AddScoped<IMetadataFilterService, MetadataFilterService>();
+            services.AddScoped<IFusionRanker, FusionRanker>();
             
             return services;
         }

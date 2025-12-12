@@ -18,7 +18,7 @@ namespace InsightBase.Infrastructure.Persistence
         public DbSet<Document> Documents => Set<Document>();
         public DbSet<DocumentChunk> DocumentChunks => Set<DocumentChunk>();
         public DbSet<EmbeddingEntity> EmbeddingEntities => Set<EmbeddingEntity>();
-        public DbSet<User> Users => Set<User>();
+        public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

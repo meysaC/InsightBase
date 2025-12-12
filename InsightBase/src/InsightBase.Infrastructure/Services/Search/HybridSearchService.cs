@@ -12,10 +12,10 @@ namespace InsightBase.Infrastructure.Services.Search
 {
     public class HybridSearchService : IHybridSearchService
     {
-        // private readonly IVectorSearchService _vectorSearch;
-        // private readonly IKeywordSearchService _keywordSearch;
-        // private readonly IMetadataFilterService _metadataFilter;
-        // private readonly IFusionRanker _fusionRanker;
+        private readonly IVectorSearchService _vectorSearch;
+        private readonly IKeywordSearchService _keywordSearch;
+        private readonly IMetadataFilterService _metadataFilter;
+        private readonly IFusionRanker _fusionRanker;
         private readonly ILogger<HybridSearchService> _logger;
 
 
@@ -24,17 +24,17 @@ namespace InsightBase.Infrastructure.Services.Search
 
 
         public HybridSearchService(
-            // IVectorSearchService vectorSearch,
-            // IKeywordSearchService keywordSearch,
-            // IMetadataFilterService metadataFilter,
-            // IFusionRanker fusionRanker,
+            IVectorSearchService vectorSearch,
+            IKeywordSearchService keywordSearch,
+            IMetadataFilterService metadataFilter,
+            IFusionRanker fusionRanker,
             ILogger<HybridSearchService> logger,
             IConfiguration config) //
         {
-            // _vectorSearch = vectorSearch;
-            // _keywordSearch = keywordSearch;
-            // _metadataFilter = metadataFilter;
-            // _fusionRanker = fusionRanker;
+            _vectorSearch = vectorSearch;
+            _keywordSearch = keywordSearch;
+            _metadataFilter = metadataFilter;
+            _fusionRanker = fusionRanker;
             _logger = logger;
             _config = config;
         }
@@ -51,13 +51,13 @@ namespace InsightBase.Infrastructure.Services.Search
            // vector search (semantic)
            if(queryContext.RequiresSemanticSearch)
             {
-                // searchTask.Add(ExecuteVectorSearch(queryContext, accessDomain, cancellationToken));
+                searchTask.Add(ExecuteVectorSearch(queryContext, accessDomain, cancellationToken));
             }
 
             // keyword search (BM25)
             if(ShouldUseKeywordSearch(queryContext))
             {
-                // searchTask.Add(ExecuteKeywordSearch(queryContext, accessDomain, cancellationToken));
+                searchTask.Add(ExecuteKeywordSearch(queryContext, accessDomain, cancellationToken));
             }
 
             // exact match search (dosya numarası, kanun maddesi...)
@@ -70,75 +70,75 @@ namespace InsightBase.Infrastructure.Services.Search
 
             // 3. metadata filtering uygula
             var allResults = SearchResultSets.SelectMany(r => r).ToList();
-            // var filteredResults = await _metadataFilter.FilterAsync(
-            //                                             allResults,
-            //                                             queryContext,
-            //                                             cancellationToken
-            // );
+            var filteredResults = await _metadataFilter.FilterAsync(
+                                                        allResults,
+                                                        queryContext,
+                                                        cancellationToken
+            );
 
             // 4. fusion ranking  ile birleştir ve sırala
-            // var rankedResults = await _fusionRanker.RankAsync(
-            //                                             filteredResults,
-            //                                             queryContext,
-            //                                             cancellationToken
-            // );
+            var rankedResults = await _fusionRanker.RankAsync(
+                                                        filteredResults,
+                                                        queryContext,
+                                                        cancellationToken
+            );
 
             // 5. top k sonucu döndür
-            // var finalResults = rankedResults
-            //                     .Take(_config["RAG:HybridSearch:MaxResults"]) //.MaxResults
-            //                     .ToList();
+            var finalResults = rankedResults
+                                .Take(_config.GetValue<int>("RAG:HybridSearch:MaxResults"))
+                                .ToList();
 
-            // _logger.LogInformation("HybridSearchService Hybrid search tamamnlandı. {Count} bulundu, ortalama sonuç skoru: {AvgScore:F3}", finalResults.Count, finalResults.Any() ? finalResults.Average(r => r.FinalScore) : 0);
+            _logger.LogInformation("HybridSearchService Hybrid search tamamnlandı. {Count} bulundu, ortalama sonuç skoru: {AvgScore:F3}", finalResults.Count, finalResults.Any() ? finalResults.Average(r => r.FinalScore) : 0);
 
             return null;// finalResults;
         }
 
         // vektör arama pgvector HNSW
-        // private async Task<List<SearchResult>> ExecuteVectorSearch(QueryContext queryContext, object accessDomain, CancellationToken cancellationToken)
-        // {
-        //    try
-        //    {
-        //         var results = await _vectorSearch.SearchAsync(queryContext.OriginalQuery, accessDomain, topK: _config["RAG:HybridSearch:VectorSearchTopK"], cancellationToken); // _config.VectorSearchTopK
+        private async Task<List<SearchResult>> ExecuteVectorSearch(QueryContext queryContext, AccessDomain accessDomain, CancellationToken cancellationToken)
+        {
+           try
+           {
+                var results = await _vectorSearch.SearchAsync(queryContext.OriginalQuery, accessDomain, topK: _config.GetValue<int>("RAG:HybridSearch:VectorSearchTopK"), cancellationToken);
 
-        //         foreach (var result in results)
-        //         {
-        //             result.VectortorScore = NormalizeScore(result.VectortorScore, ScoreType.Cosine);
-        //         }
+                foreach (var result in results)
+                {
+                    result.VectorScore = NormalizeScore(result.VectorScore, ScoreType.Cosine);
+                }
 
-        //         _logger.LogDebug("HybridSearchService Vector arama {Count} sonuç döndürdü", results.Count);
-        //         return results;
-        //    }
-        //    catch (System.Exception ex)
-        //    {
-        //         _logger.LogError("HybridSearchService Vector arama başarısız", ex);
-        //         return new List<SearchResult>();
-        //    }
-        // }
-        // private async Task<List<SearchResult>> ExecuteKeywordSearch(QueryContext queryContext, object accessDomain, CancellationToken cancellationToken)
-        // {
-        //    try
-        //    {
-        //         // hukuki terimleri extract et
-        //         var legalTerms = ExtractLegalTerms(queryContext);
+                _logger.LogDebug("HybridSearchService Vector arama {Count} sonuç döndürdü", results.Count);
+                return results;
+           }
+           catch (System.Exception ex)
+           {
+                _logger.LogError("HybridSearchService Vector arama başarısız", ex);
+                return new List<SearchResult>();
+           }
+        }
+        private async Task<List<SearchResult>> ExecuteKeywordSearch(QueryContext queryContext, AccessDomain accessDomain, CancellationToken cancellationToken)
+        {
+           try
+           {
+                // hukuki terimleri extract et
+                var legalTerms = ExtractLegalTerms(queryContext);
 
-        //         var results = await _keywordSearch.SearchAsync(legalTerms, accessDomain, topK: _config["RAG:HybridSearch:KeywordSearchTopK"], cancellationToken); //_config.KeywordSearchTopK
+                var results = await _keywordSearch.SearchAsync(legalTerms, accessDomain, topK: _config.GetValue<int>("RAG:HybridSearch:KeywordSearchTopK"), cancellationToken); 
 
-        //         foreach (var result in results)
-        //         {
-        //             result.BM25Score = NormalizeScore(result.BM25Score, ScoreType.BM25);
-        //         }
+                foreach (var result in results)
+                {
+                    result.BM25Score = NormalizeScore(result.BM25Score, ScoreType.BM25);
+                }
 
-        //         _logger.LogDebug("HybridSearchService Keyword arama {Count} sonuç döndürdü", results.Count);
-        //         return results;
-        //    }
-        //    catch (System.Exception ex)
-        //    {
-        //         _logger.LogError("HybridSearchService Keyword arama başarısız", ex);
-        //         return new List<SearchResult>();
-        //    }
-        // }
+                _logger.LogDebug("HybridSearchService Keyword arama {Count} sonuç döndürdü", results.Count);
+                return results;
+           }
+           catch (System.Exception ex)
+           {
+                _logger.LogError("HybridSearchService Keyword arama başarısız", ex);
+                return new List<SearchResult>();
+           }
+        }
         // exaxt match araması (kanun maddesi, dosya no...)
-        private async Task<List<SearchResult>> ExecuteExactMatchSearch(QueryContext queryContext, object accessDomain, CancellationToken cancellationToken)
+        private async Task<List<SearchResult>> ExecuteExactMatchSearch(QueryContext queryContext, AccessDomain accessDomain, CancellationToken cancellationToken)
         {
            try
            {
@@ -147,15 +147,15 @@ namespace InsightBase.Infrastructure.Services.Search
                 // kanun maddesi araması
                 if(queryContext.LawReferences.Any())
                 {
-                    // var lawResults = await _keywordSearch.ExactMatchLawReferancesAsync(queryContext.LawReferences, accessDomain, cancellationToken);
-                    // results.AddRange(lawResults);
+                    var lawResults = await _keywordSearch.ExactMatchLawReferencesAsync(queryContext.LawReferences, accessDomain, cancellationToken);
+                    results.AddRange(lawResults);
                 }
 
                 // dosya numarası araması
                 if(queryContext.FileNumbers.Any())
                 {
-                    // var fileResults = await _keywordSearch.ExactMatchFileNumbersAsync(queryContext.FileNumbers, accessDomain, cancellationToken);
-                    // results.AddRange(fileResults);
+                    var fileResults = await _keywordSearch.ExactMatchFileNumbersAsync(queryContext.FileNumbers, accessDomain, cancellationToken);
+                    results.AddRange(fileResults);
                 }
 
                 // exact match e göre score veriliyor
