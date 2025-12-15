@@ -4,7 +4,6 @@ using InsightBase.Application.Interfaces;
 using InsightBase.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using SixLabors.ImageSharp;
 
 
 namespace InsightBase.Infrastructure.Services.Account

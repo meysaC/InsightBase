@@ -79,6 +79,7 @@ namespace InsightBase.Infrastructure.Services.Search
             return Task.FromResult(resultList);            
         }
 
+
         private IEnumerable<SearchResult> ApplyLegalAreaFilter(IEnumerable<SearchResult> results, List<string> legalAreas)
         {
             var filtered = results.Where(r =>
@@ -90,8 +91,6 @@ namespace InsightBase.Infrastructure.Services.Search
 
             return filtered;
         }
-
-
         private IEnumerable<SearchResult> ApplyCourtFilter(IEnumerable<SearchResult> results, List<string> courts) //fuuzy match
         {
             var filtered = results.Where(r =>
@@ -105,8 +104,6 @@ namespace InsightBase.Infrastructure.Services.Search
 
             return filtered;
         }
-
-
         private IEnumerable<SearchResult> ApplyDateRangeFilter(IEnumerable<SearchResult> results, DateTime? startDate, DateTime? endDate)
         {
            var filtered = results.Where(r =>
@@ -130,8 +127,6 @@ namespace InsightBase.Infrastructure.Services.Search
 
             return filtered;
         }
-
-
         private IEnumerable<SearchResult> ApplyLawReferenceFilter(IEnumerable<SearchResult> results, List<string> lawReferences)
         {
             var filtered = results.Where(r =>
@@ -145,8 +140,6 @@ namespace InsightBase.Infrastructure.Services.Search
 
             return filtered;
         }
-
-
         private IEnumerable<SearchResult> ApplyDocumentTypeFilter(IEnumerable<SearchResult> results, bool requiresCaseLaw, bool requiresLegislation)
         {
             if (!requiresCaseLaw && !requiresLegislation)
@@ -170,8 +163,6 @@ namespace InsightBase.Infrastructure.Services.Search
 
             return filtered;
         }
-
-
         private IEnumerable<SearchResult> ApplyFileNumberFilter(IEnumerable<SearchResult> results, List<string> fileNumbers)
         {
             var filtered = results.Where(r =>
@@ -184,8 +175,6 @@ namespace InsightBase.Infrastructure.Services.Search
 
             return filtered;
         }
-
-
         private IEnumerable<SearchResult> PrioritizeCurrentLegislation(IEnumerable<SearchResult> results)
         {
            var sorted = results.OrderBy(r => r.IsAmended ? 1 : 0);
@@ -194,7 +183,6 @@ namespace InsightBase.Infrastructure.Services.Search
 
             return sorted;
         }
-
 
 
         public Task<List<SearchResult>> ApplyCustomFiltersAsync(List<SearchResult> results, Dictionary<string, object> customFilters, CancellationToken cancellationToken = default)

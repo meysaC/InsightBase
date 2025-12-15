@@ -11,6 +11,10 @@ using InsightBase.Infrastructure.Services.Search;
 using InsightBase.Infrastructure.Services.RAG;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using InsightBase.Infrastructure.Services.Security;
+using InsightBase.Infrastructure.Mappers;
+using InsightBase.Infrastructure.Services.QueryAnalyzer;
+using InsightBase.Infrastructure.Services.Account;
 
 namespace InsightBase.Infrastructure
 {
@@ -60,13 +64,22 @@ namespace InsightBase.Infrastructure
             services.AddScoped<IRedisCacheService, RedisCacheService>();
             services.AddSingleton<IMessageBus, RabbitMqMessageBus>();
             services.AddHostedService<EmbeddingWorker>(); //HostedService kendiliğinden Singleton gibi davranır
+            
+            services.AddScoped<ITokenService, TokenService>();
+            
+            services.AddScoped<IQueryAnalyzer, QueryAnalyzer>();
+            services.AddScoped<ILLMExtractor, LLMExtractor>();
+
             services.AddScoped<IHybridSearchService, HybridSearchService>();
             services.AddScoped<IAnswerValidator, AnswerValidator>();
+            services.AddScoped<ICitationMapper, CitationMapper>();
             services.AddScoped<IPromptBuilder, PromptBuilder>();
             services.AddScoped<IVectorSearchService, VectorSearchService>();
             services.AddScoped<IKeywordSearchService, KeywordSearchService>();
             services.AddScoped<IMetadataFilterService, MetadataFilterService>();
             services.AddScoped<IFusionRanker, FusionRanker>();
+            services.AddScoped<IAccessControlService, AccessControlService>();
+            services.AddScoped<IRAGOrchestrator, RAGOrchestrator>();
             
             return services;
         }

@@ -22,7 +22,7 @@ namespace InsightBase.Infrastructure.Services.Search
 
             _logger.LogInformation("KeywordSearchService SearchAsync started with {TermCount} terms.", terms.Count);
 
-            using var connection = new Npgsql.NpgsqlConnection(_connectionString);
+            using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync(cancellationToken);
 
             var tsquery = BuildTsQuery(terms);
@@ -131,7 +131,6 @@ namespace InsightBase.Infrastructure.Services.Search
             }
             return results;
         }
-
         public async Task<List<SearchResult>> ExactMatchFileNumbersAsync(List<string> fileNumbers, AccessDomain accessDomain, CancellationToken cancellationToken = default)
         {
             if(!fileNumbers.Any())
@@ -248,6 +247,5 @@ namespace InsightBase.Infrastructure.Services.Search
                 cmd.Parameters.AddWithValue("organizationIds", accessDomain.UserOrganizationIds.ToArray());
             }
         }
-
     }
 }

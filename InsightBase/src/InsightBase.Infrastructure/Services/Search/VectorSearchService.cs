@@ -9,7 +9,7 @@ using InsightBase.Application.Models.Enum;
 namespace InsightBase.Infrastructure.Services.Search
 {
     public class VectorSearchService : IVectorSearchService //pgvector ile semantic search
-                                                            // HNSW index kullanarak cosine similarity search
+                                                            // HNSW (Hierarchical Navigable Small World Graph -> approximate nearest neighbor (ANN) algoritması) index kullanarak cosine similarity search
     {
         private readonly string _connectionString;
         private readonly IEmbeddingService _embeddingService;
@@ -47,6 +47,7 @@ namespace InsightBase.Infrastructure.Services.Search
 
             var accessClause = BuildAccessControlClause(accessDomain);
 
+            // c.embedding <=> @queryEmbedding pgvector’ın HNSW distance operator’udur (HNSW index kullanılarak nearest-neighbor search)
             var sql = $@"
                 SELECT  
                     c.chunk_id,
@@ -74,9 +75,9 @@ namespace InsightBase.Infrastructure.Services.Search
                 LIMIT @topK";
 
             using var cmd = new NpgsqlCommand(sql, connection);
-            // ????????????????????????
+
             var embeddings = await queryEmbedding; // Await the task to get the actual List<float[]>
-            var embeddingVector = embeddings[0]; // Assuming you want the first embedding
+            var embeddingVector = embeddings[0];
 
             cmd.Parameters.AddWithValue("queryEmbedding", new Vector(embeddingVector)); // NpgsqlTypes.NpgsqlDbType.Array
             cmd.Parameters.AddWithValue("topK", topK);
@@ -90,8 +91,7 @@ namespace InsightBase.Infrastructure.Services.Search
             while (await reader.ReadAsync(cancellationToken))
             {
                 // ???????????????????????????????
-                var result = Mappers.SearchResultMapper.ToSearchResultFromNpgsql(reader); //
-                // ???????????????????? 
+                var result = Mappers.SearchResultMapper.ToSearchResultFromNpgsql(reader);
                 // var result = MapSearchResult(reader);
                 // var result = new SearchResult
                 // {
@@ -168,21 +168,19 @@ namespace InsightBase.Infrastructure.Services.Search
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
             while (await reader.ReadAsync(cancellationToken))
             {
-                // ???????????????????????????????
                 results.Add(Mappers.SearchResultMapper.ToSearchResultFromNpgsql(reader)); //ToSearchResult
-                // results.Add(MapSearchResult(reader));
             }
             return results;
         }
 
 
 
-        private string BuildAccessControlClause(AccessDomain accessDomain)
+        private string BuildAccessControlClause(AccessDomain accessDomain) // döküman global ise kullanıcı görebilir, kullanıcının bağlı old orginazasyona aitse yine görebilir
         {
             var clauses = new List<string>() { "d.is_global = true"};
             if(accessDomain.UserOrganizationIds.Any())
             {
-                clauses.Add("d.organization_id = ANY(@userOrganizationIds)");
+                clauses.Add("d.organization_id = ANY(@userOrganizationIds)"); // SQL injection güvenli çünkü parametre kullanılıyor (@userOrganizationIds)
             }
             return string.Join(" OR ", clauses);
         }
