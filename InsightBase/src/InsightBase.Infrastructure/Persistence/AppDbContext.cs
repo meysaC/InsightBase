@@ -18,11 +18,27 @@ namespace InsightBase.Infrastructure.Persistence
         public DbSet<Document> Documents => Set<Document>();
         public DbSet<DocumentChunk> DocumentChunks => Set<DocumentChunk>();
         public DbSet<EmbeddingEntity> EmbeddingEntities => Set<EmbeddingEntity>();
+        public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            List<IdentityRole> roles = new List<IdentityRole>
+            {
+                new IdentityRole
+                {
+                    Name = "Admin",
+                    NormalizedName = "ADMIN"
+                },
+                new IdentityRole
+                {
+                    Name = "User",
+                    NormalizedName = "USER"
+                }
+            };
+            modelBuilder.Entity<IdentityRole>().HasData(roles);
 
             modelBuilder.HasPostgresExtension("vector");
 
@@ -43,18 +59,6 @@ namespace InsightBase.Infrastructure.Persistence
                 entity.Property(e => e.CreatedAt)
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
-
-            // DocumentChunk ↔ Embedding 1:1    
-            // modelBuilder.Entity<Embedding>(entity =>
-            // {
-            //     entity.Property(e => e.CreatedAt)
-            //         .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            //     entity.HasOne(e => e.DocumentChunk)
-            //         .WithOne(dc => dc.Embedding)
-            //         .HasForeignKey<Embedding>(e => e.DocumentChunkId)
-            //         .OnDelete(DeleteBehavior.Cascade); // DocumentChunk silindiğinde ilişkili Embedding de silinsin
-            // });
 
             // Document ↔ DocumentChunk 1:N
             modelBuilder.Entity<DocumentChunk>(entity =>

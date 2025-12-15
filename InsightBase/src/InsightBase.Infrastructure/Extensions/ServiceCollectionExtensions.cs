@@ -15,7 +15,6 @@ namespace InsightBase.Infrastructure.Extensions
     {
         public static IServiceCollection AddQueryAnalyzer(this IServiceCollection services, IConfiguration configuration)
         {
-            
             var llmApiUrl = configuration["LLM_API_URL"] ?? throw new InvalidOperationException("LLM:ApiUrl eksik ya da yanlış.");
             var llmTimeout = configuration.GetValue<int>("LLM_TIMEOUT_SECONDS", 30);
             var llmRetrycount = configuration.GetValue<int>("LLM_RETRY_COUNT", 3);
@@ -47,7 +46,6 @@ namespace InsightBase.Infrastructure.Extensions
 
             return services;
         }
-
         private static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy(IConfiguration config)
         {
             var failures = config.GetValue<int>("LLM_CIRCUIT_BREAKER_FAILURE_THRESHOLD", 5);
@@ -69,8 +67,6 @@ namespace InsightBase.Infrastructure.Extensions
                             }
                     );
         }
-
-
         private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(int llmRetrycount)
         {
             // retry policy 3 deneme, exponential backoff
@@ -87,12 +83,10 @@ namespace InsightBase.Infrastructure.Extensions
                         }
                     );
         }
-    
-    
         public static IServiceCollection AddQueryAnalyzerWithProvider(this IServiceCollection services, IConfiguration config) //LLMProvider provider
         {
             services.AddQueryAnalyzer(config);
-
+            
             // string provider = config["LLM_PROVIDER"] ?? "OpenAI";
             // string model = config["LLM_MODEL"] ?? "gpt-4o-mini";
 
@@ -140,6 +134,5 @@ namespace InsightBase.Infrastructure.Extensions
 
             return services;
         }
-    
     }
 }

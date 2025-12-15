@@ -122,7 +122,7 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
                 messages = new []
                 {
                     new { role = "system", content = instruction },
-                    new { role = "user", content = input }
+                    new { role = "user", content = input } 
                 },
                 response_format = new { type = "json_object" },
                 max_tokens = 1000,

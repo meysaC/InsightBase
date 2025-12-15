@@ -1,6 +1,7 @@
+using System.Net.Http.Json;
+using System.Text.Json;
 using InsightBase.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace InsightBase.Infrastructure.Services
@@ -39,7 +40,7 @@ namespace InsightBase.Infrastructure.Services
             try
             {
                 var value = await _cacheDb.StringGetAsync(key);
-                return value.IsNullOrEmpty ? default : JsonConvert.DeserializeObject<T>(value);
+                return value.IsNullOrEmpty ? default : JsonSerializer.Deserialize<T>(value); //JsonContent.DeserializeObject<T>(value)
             }
             catch (Exception ex)
             {
@@ -65,7 +66,7 @@ namespace InsightBase.Infrastructure.Services
             {
                 var expirationTime = DateTimeOffset.Now.AddMinutes(_defaultExpiryMinutes);
                 var expiryTime = TimeSpan.FromMinutes(_defaultExpiryMinutes);
-                var isSet = await _cacheDb.StringSetAsync(key, JsonConvert.SerializeObject(value), expiryTime);
+                var isSet = await _cacheDb.StringSetAsync(key, JsonSerializer.Serialize(value), expiryTime); // JsonConvert.SerializeObject(value)
                 return isSet;
             }
             catch (Exception ex)

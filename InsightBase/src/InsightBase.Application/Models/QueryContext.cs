@@ -48,7 +48,8 @@ namespace InsightBase.Application.Models
         public ExtractionSource Source { get; set; } = new();
 
 
-
+        // validation
+        public bool IsValid => !string.IsNullOrWhiteSpace(OriginalQuery) && Intents.Any();
 
 
         // public string OriginalQuery { get; set; } = "";
