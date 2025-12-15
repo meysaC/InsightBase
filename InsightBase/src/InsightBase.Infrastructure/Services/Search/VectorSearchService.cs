@@ -79,7 +79,7 @@ namespace InsightBase.Infrastructure.Services.Search
             var embeddings = await queryEmbedding; // Await the task to get the actual List<float[]>
             var embeddingVector = embeddings[0];
 
-            cmd.Parameters.AddWithValue("queryEmbedding", new Vector(embeddingVector)); // NpgsqlTypes.NpgsqlDbType.Array
+            cmd.Parameters.AddWithValue("queryEmbedding", new Vector(embeddingVector));
             cmd.Parameters.AddWithValue("topK", topK);
 
             // access control parametreleri ekle
@@ -90,31 +90,7 @@ namespace InsightBase.Infrastructure.Services.Search
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
             while (await reader.ReadAsync(cancellationToken))
             {
-                // ???????????????????????????????
                 var result = Mappers.SearchResultMapper.ToSearchResultFromNpgsql(reader);
-                // var result = MapSearchResult(reader);
-                // var result = new SearchResult
-                // {
-                //     ChunkId = reader.GetString(0),
-                //     DocumentId = reader.GetString(1),
-                //     ChunkIndex = reader.GetInt32(2),
-                //     Content = reader.GetString(3),
-                //     DocumentType = Enum.Parse<DocumentType>(reader.GetString(5)),
-                //     LegalArea = reader.GetString(6),
-                //     Court = reader.IsDBNull(7) ? null : reader.GetString(7),
-                //     FileNumber = reader.IsDBNull(8) ? null : reader.GetString(8),
-                //     PublishDate = reader.IsDBNull(9) ? null : reader.GetDateTime(9),
-                //     LawReferences = reader.IsDBNull(10) 
-                //                     ? new List<string>() 
-                //                     : reader.GetFieldValue<string[]>(10).ToList(),
-                //     Url = reader.IsDBNull(11) ? null : reader.GetString(11),
-                //     IsGlobal = reader.GetBoolean(12),
-                //     OrganizationId = reader.IsDBNull(13) ? null : reader.GetString(13),
-                //     IsAmended = reader.GetBoolean(14),
-                //     AmendmentDate = reader.IsDBNull(15) ? null : reader.GetDateTime(15),
-                //     VectorScore = reader.GetDouble(16),
-                //     Relevance = reader.GetDouble(16)
-                // };
                 results.Add(result);
             }
             return results;

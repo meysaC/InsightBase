@@ -1,7 +1,7 @@
 using InsightBase.Application.DTOs;
 using MediatR;
 
-namespace InsightBase.Application.Commands
+namespace InsightBase.Application.Commands.Document
 {
     public class UpdateDocumentCommand : IRequest<DocumentDto?> //DocumentDto tipinde geri döndürülcek
     {

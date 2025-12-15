@@ -1,6 +1,6 @@
 
 using InsightBase.Api.DTOs;
-using InsightBase.Application.Commands;
+using InsightBase.Application.Commands.Document;
 using InsightBase.Application.DTOs;
 
 namespace InsightBase.Api.Mappers

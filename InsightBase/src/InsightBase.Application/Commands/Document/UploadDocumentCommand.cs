@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using InsightBase.Application.DTOs;
 using MediatR;
 
-namespace InsightBase.Application.Commands
+namespace InsightBase.Application.Commands.Document
 {
     public class UploadDocumentCommand : IRequest<DocumentDto> //Guid
     {

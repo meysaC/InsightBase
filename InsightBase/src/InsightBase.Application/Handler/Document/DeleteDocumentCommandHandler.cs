@@ -1,11 +1,11 @@
 using MediatR;
-using InsightBase.Application.Commands;
+using InsightBase.Application.Commands.Document;
 using InsightBase.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 using InsightBase.Application.DTOs;
 using System.Data.SqlTypes;
 
-namespace InsightBase.Application.Handler
+namespace InsightBase.Application.Handler.Document
 {
     public class DeleteDocumentCommandHandler : IRequestHandler<DeleteDocumentCommand ,RemoveResult>
     {
