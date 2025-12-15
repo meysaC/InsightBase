@@ -1,11 +1,11 @@
-using InsightBase.Application.Commands;
+using InsightBase.Application.Commands.Document;
 using InsightBase.Application.DTOs;
 using InsightBase.Application.Interfaces;
 using InsightBase.Application.Mapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace InsightBase.Application.Handler
+namespace InsightBase.Application.Handler.Document
 {
     public class GetDocumentByIdQueryHandler : IRequestHandler<GetDocumentByIdCommand, DocumentDto?> //TRequest, TResponse
     {

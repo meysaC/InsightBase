@@ -1,4 +1,4 @@
-using InsightBase.Application.Commands;
+using InsightBase.Application.Commands.Document;
 using InsightBase.Application.DTOs;
 using InsightBase.Application.Events;
 using InsightBase.Application.Interfaces;
@@ -6,7 +6,7 @@ using InsightBase.Application.Mapper;
 using InsightBase.Domain.Entities;
 using MediatR;
 
-namespace InsightBase.Application.Handler
+namespace InsightBase.Application.Handler.Document
 {
     public class UploadDocumentCommandHandler : IRequestHandler<UploadDocumentCommand, DocumentDto> //Guid
     {
@@ -33,7 +33,7 @@ namespace InsightBase.Application.Handler
         }
         public async Task<DocumentDto?> Handle(UploadDocumentCommand command, CancellationToken cancellationToken) //Guid
         {
-            var document = new Document
+            var document = new Domain.Entities.Document
             {
                 Id = Guid.NewGuid(),
                 UserFileName = command.UserFileName,

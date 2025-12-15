@@ -1,10 +1,10 @@
-using InsightBase.Application.Commands;
+using InsightBase.Application.Commands.Document;
 using InsightBase.Application.DTOs;
 using InsightBase.Application.Interfaces;
 using InsightBase.Application.Mapper;
 using MediatR;
 
-namespace InsightBase.Application.Handler
+namespace InsightBase.Application.Handler.Document
 {
     public class UpdateDocumentCommandHandler : IRequestHandler<UpdateDocumentCommand, DocumentDto>
     {
