@@ -13,8 +13,8 @@ using Pgvector;
 namespace InsightBase.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250916134310_DocumentApplicationuser")]
-    partial class DocumentApplicationuser
+    [Migration("20260108151153_Initial2")]
+    partial class Initial2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,8 +24,148 @@ namespace InsightBase.Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "vector");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("InsightBase.Domain.Entities.Chat.Conversation", b =>
+                {
+                    b.Property<string>("ConversationId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("LastMessageAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LegalAreas")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<int>("MessageCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Metadata")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("RelevantLaws")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("TokensUsed")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ConversationId");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("LastMessageAt");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "Status");
+
+                    b.ToTable("conversations", (string)null);
+                });
+
+            modelBuilder.Entity("InsightBase.Domain.Entities.Chat.Message", b =>
+                {
+                    b.Property<string>("MessageId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("AttachmentIds")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("Citations")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConversationId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("EditedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Metadata")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("QueryContext")
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("SequenceNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Sources")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("TokensUsed")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("MessageId");
+
+                    b.HasIndex("Content");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Content"), "gin");
+                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("Content"), new[] { "gin_trgm_ops" });
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ConversationId", "SequenceNumber");
+
+                    b.ToTable("messages", (string)null);
+                });
 
             modelBuilder.Entity("InsightBase.Domain.Entities.Document", b =>
                 {
@@ -37,19 +177,16 @@ namespace InsightBase.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ContentType")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("DocumentType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FilePath")
@@ -59,11 +196,12 @@ namespace InsightBase.Infrastructure.Migrations
                     b.Property<long>("FileSize")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsPublic")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("Keywords")
-                        .HasColumnType("text");
 
                     b.Property<string>("LegalArea")
                         .HasColumnType("text");
@@ -71,8 +209,10 @@ namespace InsightBase.Infrastructure.Migrations
                     b.Property<DateTime?>("PublishDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserFileName")
                         .HasColumnType("text");
 
                     b.Property<string>("UserId")
@@ -138,9 +278,7 @@ namespace InsightBase.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("DocumentChunkId")
                         .HasColumnType("uuid");
@@ -244,7 +382,7 @@ namespace InsightBase.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<Vector>("Vector")
-                        .HasColumnType("vector(3072)");
+                        .HasColumnType("vector(1536)");
 
                     b.HasKey("Id");
 
@@ -386,6 +524,90 @@ namespace InsightBase.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("InsightBase.Domain.Entities.Chat.Conversation", b =>
+                {
+                    b.HasOne("InsightBase.Infrastructure.Persistence.ApplicationUser", null)
+                        .WithMany("Conversations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("InsightBase.Domain.Entities.Chat.ConversationSettings", "Settings", b1 =>
+                        {
+                            b1.Property<string>("ConversationId")
+                                .HasColumnType("text");
+
+                            b1.Property<bool>("EnableCitations")
+                                .HasColumnType("boolean")
+                                .HasColumnName("enable_citations");
+
+                            b1.Property<bool>("EnableSourceDisplay")
+                                .HasColumnType("boolean")
+                                .HasColumnName("enable_source_display");
+
+                            b1.Property<int>("MaxSourcesPerMessage")
+                                .HasColumnType("integer")
+                                .HasColumnName("max_sources_per_message");
+
+                            b1.Property<string>("PreferredLegalArea")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("preferred_legal_area");
+
+                            b1.HasKey("ConversationId");
+
+                            b1.ToTable("conversations");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ConversationId");
+                        });
+
+                    b.Navigation("Settings")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("InsightBase.Domain.Entities.Chat.Message", b =>
+                {
+                    b.HasOne("InsightBase.Domain.Entities.Chat.Conversation", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InsightBase.Infrastructure.Persistence.ApplicationUser", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("InsightBase.Domain.Entities.Chat.MessageFeedback", "Feedback", b1 =>
+                        {
+                            b1.Property<string>("MessageId")
+                                .HasColumnType("character varying(100)");
+
+                            b1.Property<string>("Comment")
+                                .HasColumnType("text")
+                                .HasColumnName("feedback_comment");
+
+                            b1.Property<DateTime>("CreatedAt")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("feedback_created_at");
+
+                            b1.Property<bool>("IsHelpful")
+                                .HasColumnType("boolean")
+                                .HasColumnName("feedback_is_helpful");
+
+                            b1.HasKey("MessageId");
+
+                            b1.ToTable("messages");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MessageId");
+                        });
+
+                    b.Navigation("Feedback");
+                });
+
             modelBuilder.Entity("InsightBase.Domain.Entities.Document", b =>
                 {
                     b.HasOne("InsightBase.Infrastructure.Persistence.ApplicationUser", null)
@@ -476,6 +698,11 @@ namespace InsightBase.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("InsightBase.Domain.Entities.Chat.Conversation", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
             modelBuilder.Entity("InsightBase.Domain.Entities.Document", b =>
                 {
                     b.Navigation("Chunks");
@@ -484,6 +711,13 @@ namespace InsightBase.Infrastructure.Migrations
             modelBuilder.Entity("InsightBase.Domain.Entities.DocumentChunk", b =>
                 {
                     b.Navigation("Embedding");
+                });
+
+            modelBuilder.Entity("InsightBase.Infrastructure.Persistence.ApplicationUser", b =>
+                {
+                    b.Navigation("Conversations");
+
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

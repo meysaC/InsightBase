@@ -12,7 +12,11 @@ namespace InsightBase.Infrastructure.Services.Search
         private readonly string _connectionString;
         private readonly IConfiguration _config;
         private readonly ILogger<KeywordSearchService> _logger;
-        public KeywordSearchService(IConfiguration config, ILogger<KeywordSearchService> logger, string connectionString) => (_config, _logger, _connectionString) = (config, logger, connectionString);
+        public KeywordSearchService(IConfiguration config, ILogger<KeywordSearchService> logger)
+        {
+            _connectionString = config.GetConnectionString("DefaultConnection");
+            _logger = logger;
+        }
         
         // BM25 keyword search
         public async Task<List<SearchResult>> SearchAsync(List<string> terms, AccessDomain accessDomain, int topK = 20, CancellationToken cancellationToken = default)

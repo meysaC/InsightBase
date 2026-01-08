@@ -15,7 +15,12 @@ namespace InsightBase.Infrastructure.Services.Search
         private readonly IEmbeddingService _embeddingService;
         private readonly ILogger<VectorSearchService> _logger;
         private readonly IConfiguration _config;
-        public VectorSearchService(string connectionString, IEmbeddingService embeddingService, ILogger<VectorSearchService> logger, IConfiguration config) => (_connectionString, _embeddingService, _logger, _config) = (_connectionString, embeddingService, logger, config);
+        public VectorSearchService(IEmbeddingService embeddingService, ILogger<VectorSearchService> logger, IConfiguration config)
+        {
+            _connectionString = config.GetConnectionString("DefaultConnection");
+            _embeddingService = embeddingService;
+            _logger = logger;
+        }
         
         // pgvector ile vektör arama
         public async Task<List<SearchResult>> SearchAsync(string query, AccessDomain accessDomain, int topK = 20, CancellationToken cancellationToken = default)

@@ -11,7 +11,11 @@ namespace InsightBase.Infrastructure.Services.Security
         private readonly string _connectionString;
         private readonly ILogger<AccessControlService> _logger;
         private readonly IConfiguration _configuration;
-        public AccessControlService(string connectionString, ILogger<AccessControlService> logger, IConfiguration configuration) => (_configuration, _logger, _connectionString) = (configuration, logger, connectionString);
+        public AccessControlService( ILogger<AccessControlService> logger, IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _logger = logger;
+        }
 
         public async Task<AccessDomain> BuildAccessDomainAsync(string userId, CancellationToken cancellationToken = default) // kullanıcıya özel erişim domaini oluştur
         {
@@ -23,7 +27,7 @@ namespace InsightBase.Infrastructure.Services.Security
                 CreatedAt = DateTime.UtcNow
             };
 
-            using var conn = new NpgsqlConnection(_connectionString);
+            using var conn = new NpgsqlConnection(_connectionString);  
             await conn.OpenAsync(cancellationToken);
 
             // 1. kullancınn organizasyonlarını al
