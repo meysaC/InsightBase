@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using InsightBase.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using InsightBase.Application.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,6 +86,12 @@ if (app.Environment.IsDevelopment())
         }
         opt.RoutePrefix = "swagger"; //string.Empty "launchUrl": "swagger",
     });
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<IIdentitySeeder>();
+    await seeder.SeedAsync();
 }
 
 

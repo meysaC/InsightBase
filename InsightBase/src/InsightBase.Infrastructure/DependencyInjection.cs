@@ -63,7 +63,7 @@ namespace InsightBase.Infrastructure
             services.AddScoped<IEmbeddingRepository, EmbeddingRepository>();
             services.AddScoped<IRedisCacheService, RedisCacheService>();
             services.AddSingleton<IMessageBus, RabbitMqMessageBus>();
-            services.AddHostedService<EmbeddingWorker>(); //HostedService kendiliğinden Singleton gibi davranır
+            services.AddHostedService<EmbeddingWorker>(); // HostedService kendiliğinden Singleton gibi davranır
             
             services.AddScoped<ITokenService, TokenService>();
             
@@ -80,6 +80,8 @@ namespace InsightBase.Infrastructure
             services.AddScoped<IFusionRanker, FusionRanker>();
             services.AddScoped<IAccessControlService, AccessControlService>();
             services.AddScoped<IRAGOrchestrator, RAGOrchestrator>();
+            
+            services.AddScoped<IIdentitySeeder, IdentitySeeder>();
             
             return services;
         }

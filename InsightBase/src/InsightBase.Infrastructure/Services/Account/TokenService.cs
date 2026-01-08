@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using InsightBase.Application.Interfaces;
 using InsightBase.Domain.Entities;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +13,12 @@ namespace InsightBase.Infrastructure.Services.Account
     {
         private readonly IConfiguration _config;
         private readonly SymmetricSecurityKey _key;
-        public TokenService(IConfiguration config, SymmetricSecurityKey key) => (_config, _key) = (config, key);
+        public TokenService(IConfiguration config)
+        {
+            _config = config;
+            var secret = config["JWT:SIGNINGKEY"];
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+        }
         public string Createtoken(User user)
         {
             var claims = new List<Claim>
