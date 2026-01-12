@@ -80,6 +80,8 @@ namespace InsightBase.Infrastructure
             services.AddScoped<IFusionRanker, FusionRanker>();
             services.AddScoped<IAccessControlService, AccessControlService>();
             services.AddScoped<IRAGOrchestrator, RAGOrchestrator>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<IAuthService, AuthService>();
             
             services.AddScoped<IIdentitySeeder, IdentitySeeder>();
             

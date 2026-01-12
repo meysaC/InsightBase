@@ -15,6 +15,7 @@ namespace InsightBase.Infrastructure.Persistence
         public DbSet<DocumentChunk> DocumentChunks => Set<DocumentChunk>();
         public DbSet<EmbeddingEntity> EmbeddingEntities => Set<EmbeddingEntity>();
         public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<Conversation> Conversations => Set<Conversation>();
         public DbSet<Message> Messages => Set<Message>();
 
@@ -23,23 +24,32 @@ namespace InsightBase.Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
-            // List<IdentityRole> roles = new List<IdentityRole>
-            // {
-            //     new IdentityRole
-            //     {
-            //         Name = "Admin",
-            //         NormalizedName = "ADMIN"
-            //     },
-            //     new IdentityRole
-            //     {
-            //         Name = "User",
-            //         NormalizedName = "USER"
-            //     }
-            // };
-            // modelBuilder.Entity<IdentityRole>().HasData(roles);
-
             modelBuilder.HasPostgresExtension("vector");
             modelBuilder.HasPostgresExtension("pg_trgm");
+
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.ToTable("RefreshTokens");
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.UserId)
+                      .IsRequired();
+
+                entity.Property(e => e.TokenHash)
+                      .IsRequired();
+
+                entity.Property(x => x.CreatedAt)
+                      .IsRequired();
+
+                entity.Property(e => e.ExpiresAt)
+                      .IsRequired();
+
+                entity.Property(e => e.IsRevoked)
+                      .HasDefaultValue(false);
+
+                entity.HasIndex(e => e.UserId);
+                entity.HasIndex(e => e.TokenHash);
+            });
 
             modelBuilder.Entity<EmbeddingEntity>(entity =>
             {
