@@ -17,7 +17,7 @@ namespace InsightBase.Api.Controllers
         public async Task<IActionResult> Register(RegisterRequestDto dto)
         {
             var result = await _mediator.Send(new RegisterUserCommand(Mappers.AuthMapper.RegisterApiDtoToApplicationRegister(dto)));
-            return result.IsSuccess ? Ok(result) : BadRequest(result.Errors);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
 
@@ -25,7 +25,7 @@ namespace InsightBase.Api.Controllers
         public async Task<IActionResult> Login(LoginRequestDto dto)
         {
             var result = await _mediator.Send(new LoginUserCommand(Mappers.AuthMapper.LoginApiDtoToApplicationLogin(dto)));
-            return result.IsSuccess ? Ok(result) : BadRequest(result.Errors);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
     }
