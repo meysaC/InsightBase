@@ -3,7 +3,5 @@ using MediatR;
 
 namespace InsightBase.Application.Commands.Auth
 {
-    public record RegisterUserCommand(
-        RegisterDto Request
-    ) : IRequest<AuthResponse>; 
+    public record RefreshTokenCommand(string RefreshToken) : IRequest<AuthResponse>;
 }

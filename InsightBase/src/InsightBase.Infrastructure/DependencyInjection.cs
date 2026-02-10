@@ -53,6 +53,8 @@ namespace InsightBase.Infrastructure
                 options.ApiKey = configuration["OpenAI:ApiKey"];
             });
 
+            services.AddHttpContextAccessor();
+
             services.AddScoped<IEmbeddingService, EmbeddingService>();
             services.AddScoped<VectorDbService>();
             services.AddScoped<IStorageService, MinioStorageService>();
@@ -64,8 +66,6 @@ namespace InsightBase.Infrastructure
             services.AddScoped<IRedisCacheService, RedisCacheService>();
             services.AddSingleton<IMessageBus, RabbitMqMessageBus>();
             services.AddHostedService<EmbeddingWorker>(); // HostedService kendiliğinden Singleton gibi davranır
-            
-            services.AddScoped<ITokenService, TokenService>();
             
             services.AddScoped<IQueryAnalyzer, QueryAnalyzer>();
             services.AddScoped<ILLMExtractor, LLMExtractor>();
@@ -80,8 +80,11 @@ namespace InsightBase.Infrastructure
             services.AddScoped<IFusionRanker, FusionRanker>();
             services.AddScoped<IAccessControlService, AccessControlService>();
             services.AddScoped<IRAGOrchestrator, RAGOrchestrator>();
+            
+            services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
             
             services.AddScoped<IIdentitySeeder, IdentitySeeder>();
             

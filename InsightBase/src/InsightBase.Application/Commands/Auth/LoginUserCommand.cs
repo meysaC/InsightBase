@@ -1,8 +1,8 @@
 using InsightBase.Application.DTOs.Auth;
+using MediatR;
 
 namespace InsightBase.Application.Commands.Auth
 {
-    public class LoginUserCommand(
-        LoginDto Request
-    ) : MediatR.IRequest<AuthResponse>;
+    //(LoginDto Request) 
+    public record LoginUserCommand(LoginDto Request) : IRequest<AuthResponse>;
 }

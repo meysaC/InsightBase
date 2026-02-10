@@ -12,5 +12,6 @@ namespace InsightBase.Application.Interfaces
         Task RevokeAllUserTokensAsync(string userId);
         Task CleanupRevokedTokensAsync(DateTime olderThan);
         Task<int> GetActiveTokenCountAsync(string userId);
+        
     }
 }

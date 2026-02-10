@@ -12,7 +12,7 @@ namespace InsightBase.Domain.Entities
 
         private RefreshToken() { }
 
-        public static RefreshToken Create(string userId, string tokenHash, DateTime expiresAt)
+        public static RefreshToken Create(string userId, string tokenHash, DateTime expiresAt) 
         {
             return new RefreshToken
             {

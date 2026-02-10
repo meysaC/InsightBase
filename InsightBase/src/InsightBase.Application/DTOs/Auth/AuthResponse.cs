@@ -33,7 +33,7 @@ namespace InsightBase.Application.DTOs.Auth
             return new AuthResponse
             {
                 Token = string.Empty,
-                RefreshToken = string.Empty,
+                // RefreshToken = string.Empty,
                 IsSuccess = false,
                 Errors = errorList
             };

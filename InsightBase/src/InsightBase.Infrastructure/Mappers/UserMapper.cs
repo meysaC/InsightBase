@@ -5,7 +5,7 @@ namespace InsightBase.Infrastructure.Mappers
 {
     public class UserMapper
     {
-        public static User ToDomain(ApplicationUser entity)
+        public static User ToDomain(ApplicationUser entity) 
         {
             var user = new User
             {

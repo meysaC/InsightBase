@@ -10,6 +10,7 @@ namespace InsightBase.Api.Mappers
             {
                 Email = apiDto.Email,
                 Password = apiDto.Password,
+                ConfirmPassword = apiDto.ConfirmPassword,
                 FullName = apiDto.FullName
             };
             return register;
@@ -24,5 +25,16 @@ namespace InsightBase.Api.Mappers
             };
             return login;
         }
+
+        // public static Api.DTOs.Auth.MeResponseDto ApplicationMeDtoToApiMeDto(Application.DTOs.Auth.MeResponseDto userApp)
+        // {
+        //     var apiMeDto = new MeResponseDto
+        //     {
+        //         Id = userApp.Id,
+        //         Email = userApp.Email,
+        //         UserName = userApp.UserName
+        //     };
+        //     return apiMeDto;
+        // }
     }
 }
