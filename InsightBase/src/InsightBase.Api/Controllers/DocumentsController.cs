@@ -33,13 +33,9 @@ namespace InsightBase.Api.Controllers
                 Content = memoryStream.ToArray()
             };
 
-            // var documentId = await _mediator.Send(command);
             var dto = await _mediator.Send(command);
             if (dto == null) return NotFound(); // 404
             return Ok(dto);
-
-            // return CreatedAtAction(nameof(GetById), new { id = documentId, version = "1.0"}, new { DocumentId = documentId}); //POST sonrası resource’un nerede olduğunu göster
-            // return Ok(new { DocumentId = documentId });
         }
         //READ LIST
         [HttpGet]

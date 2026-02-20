@@ -37,7 +37,6 @@ namespace InsightBase.Infrastructure.Services.Account
             var adminMail = "blackworld752@gmail.com";
 
             var user = await _userManager.FindByEmailAsync(adminMail);
-            
             if(user == null)
             {            
                 user = new ApplicationUser
@@ -46,11 +45,11 @@ namespace InsightBase.Infrastructure.Services.Account
                     Email = adminMail,
                     EmailConfirmed = true
                 };
+                var result = await _userManager.CreateAsync(user, "Admin123!");
+                if (!result.Succeeded) throw new Exception("Admin user could not be created");
+                await _userManager.AddToRoleAsync(user, UserRoles.Admin);
             }
-            var result = await _userManager.CreateAsync(user, "Admin123!");
-            if (!result.Succeeded) throw new Exception("Admin user could not be created");
 
-            await _userManager.AddToRoleAsync(user, UserRoles.Admin);
         }
     }
 }

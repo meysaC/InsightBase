@@ -14,6 +14,7 @@ namespace InsightBase.Application.Handler.Document
         private readonly IChunkingService _chunking;
         private readonly IDocumentRepository _documents;
         private readonly IMessageBus _messageBus;
+        private readonly ICurrentUserService _currentUser;
         private readonly ITextExtractionService _textExtraction;
 
         public UploadDocumentCommandHandler(
@@ -21,7 +22,8 @@ namespace InsightBase.Application.Handler.Document
             IChunkingService chunking,
             IDocumentRepository documents,
             IMessageBus messageBus,
-            ITextExtractionService textExtraction
+            ITextExtractionService textExtraction,
+            ICurrentUserService currentUser
         )
         {
             _storage = storage;
@@ -30,6 +32,7 @@ namespace InsightBase.Application.Handler.Document
             _documents = documents;
             _messageBus = messageBus;
             _textExtraction = textExtraction;
+            _currentUser = currentUser;
         }
         public async Task<DocumentDto?> Handle(UploadDocumentCommand command, CancellationToken cancellationToken) //Guid
         {
@@ -40,7 +43,7 @@ namespace InsightBase.Application.Handler.Document
                 FileName = command.FileName,
                 //FilePath = fileUrl,
                 //FileType = command.FileType,
-                UserId = string.IsNullOrEmpty(command.UserId) ? null : command.UserId,
+                UserId = _currentUser.UserId ?? null, //string.IsNullOrEmpty(command.UserId) ? null : command.UserId,
                 CreatedAt = DateTime.UtcNow,
                 Chunks = new List<DocumentChunk>(),
                 DocumentType = command.DocumentType, //kanun, yönetmelik, karar...

@@ -1,0 +1,7 @@
+using InsightBase.Application.DTOs.Auth;
+using MediatR;
+
+namespace InsightBase.Application.Commands.Auth
+{
+    public record RefreshTokenCommand(string RefreshToken) : IRequest<AuthResponse>;
+}
