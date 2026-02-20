@@ -104,12 +104,13 @@ app.UseCors(x => x
     .WithOrigins("http://localhost:5173")
     .AllowAnyHeader()
     .AllowAnyMethod()
-    .AllowCredentials()
+    .AllowCredentials() // yoksa cookie gönderilmez, refresh token çalışmaz
 );
 // app.UseEndpoints(enpoints => {
 //     enpoints.MapControllers();
 // });
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -29,7 +29,8 @@ namespace InsightBase.Api.Controllers
         public async Task<IActionResult> Login(LoginRequestDto dto)
         {
             var result = await _mediator.Send(new LoginUserCommand(Mappers.AuthMapper.LoginApiDtoToApplicationLogin(dto)));
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            SetRefreshTokenCookie(result.RefreshToken!);
+            return result.IsSuccess ? Ok(new { token = result.Token }) : BadRequest(new { errors = result.Errors });
         }
         // [Authorize]
         [HttpPost("logout")]
@@ -84,10 +85,11 @@ namespace InsightBase.Api.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
+                Secure = false, // true -> HTTPS üzerinden gönderilmesini sağlar
+                SameSite = SameSiteMode.Lax, //  Strict
                 Expires = DateTime.UtcNow.AddDays(7),
-                Path = "/api/auth/refresh-token" // Sadece bu end pointe gönderilir
+                Path = "/", // /refresh-token -> Sadece bu end pointe gönderilir
+                IsEssential = true
             };
             Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
         }
@@ -96,9 +98,9 @@ namespace InsightBase.Api.Controllers
             Response.Cookies.Delete("refreshToken", new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Path = "/api/auth/refresh-token"
+                Secure = false,
+                SameSite = SameSiteMode.Lax, // Strict
+                Path = "/", // /refresh-token -> Sadece bu end pointe gönderilir
             });
         }
     }

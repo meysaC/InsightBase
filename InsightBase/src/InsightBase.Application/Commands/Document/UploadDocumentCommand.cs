@@ -9,7 +9,6 @@ namespace InsightBase.Application.Commands.Document
 {
     public class UploadDocumentCommand : IRequest<DocumentDto> //Guid
     {
-        public string? UserId { get; set; } = string.Empty;
         public string? UserFileName { get; set; }
         public string FileName { get; set; }
         //public string FileType { get; set; } = null!;
