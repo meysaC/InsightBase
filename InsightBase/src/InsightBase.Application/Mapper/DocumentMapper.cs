@@ -13,7 +13,7 @@ namespace InsightBase.Application.Mapper
                 FileName = document.FileName,
                 UserFileName = document.UserFileName,
                 FilePath = document.FilePath, 
-                DocumentType = document.DocumentType,
+                DocumentType = document.DocumentType, 
                 CreatedAt = document.CreatedAt,
                 UpdatedAt = document.UpdatedAt,
                 LegalArea = document.LegalArea,

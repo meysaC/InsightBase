@@ -28,7 +28,6 @@ namespace InsightBase.Application.Handler.Document
         {
             _storage = storage;
             _chunking = chunking;
-            //_embedding = embedding;
             _documents = documents;
             _messageBus = messageBus;
             _textExtraction = textExtraction;
@@ -44,7 +43,7 @@ namespace InsightBase.Application.Handler.Document
                 //FilePath = fileUrl,
                 //FileType = command.FileType,
                 UserId = _currentUser.UserId ?? null, //string.IsNullOrEmpty(command.UserId) ? null : command.UserId,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow, 
                 Chunks = new List<DocumentChunk>(),
                 DocumentType = command.DocumentType, //kanun, yönetmelik, karar...
                 LegalArea = command.LegalArea,
@@ -94,15 +93,6 @@ namespace InsightBase.Application.Handler.Document
             await _messageBus.PublishAsync("embedding_jobs", job);
 
             return DocumentMapper.ToDocumentDto(document);
-            // return new DocumentDto
-            // {
-            //     Id = document.Id,
-            //     FileName = document.FileName,
-            //     FilePath = document.FilePath,
-            //     DocumentType = document.DocumentType,
-            //     CreatedAt = document.CreatedAt,
-            //     UpdatedAt = document.UpdatedAt
-            // };
         }
     }
 }

@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using InsightBase.Api.Mappers;
 using InsightBase.Application.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InsightBase.Api.Controllers
 {
@@ -14,7 +15,7 @@ namespace InsightBase.Api.Controllers
     {
         private readonly IMediator _mediator;
         public DocumentsController(IMediator mediator) => _mediator = mediator;
-        //UPLOAD
+        [Authorize]
         [HttpPost]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] UploadFileRequest request)
@@ -37,7 +38,7 @@ namespace InsightBase.Api.Controllers
             if (dto == null) return NotFound(); // 404
             return Ok(dto);
         }
-        //READ LIST
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<PagedResult<DocumentDto?>>> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         {
@@ -45,7 +46,6 @@ namespace InsightBase.Api.Controllers
             var result = await _mediator.Send(query);
             return result;
         }
-        //READ DETAIL
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<DocumentDto>> GetById([FromRoute] Guid id)
         {
@@ -54,7 +54,7 @@ namespace InsightBase.Api.Controllers
             if (dto == null) return NotFound(); // 404 döndürür
             return dto; //IActionResult değil e ActionResult yaptığımız için return OK(dto) şeklinde yapmamıza gerek yok
         }
-        //UPDATE
+        [Authorize]
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateDocumentRequest request)
         {
@@ -64,7 +64,7 @@ namespace InsightBase.Api.Controllers
             if (dto == null) return NotFound(); // 404
             return Ok(dto);
         }
-        //DELETE
+        [Authorize]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {

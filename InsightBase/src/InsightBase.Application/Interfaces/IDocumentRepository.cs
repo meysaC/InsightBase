@@ -4,8 +4,10 @@ namespace InsightBase.Application.Interfaces
 {
     public interface IDocumentRepository
     {
+        Task<Document?> GetUserDocumentByIdAsync(Guid id, string userId);
         Task<Document> GetByIdAsync(Guid id);
         Task<(IEnumerable<Document> Items, int TotalCount)> GetAllAsync(int page, int pageSize);
+        Task<(IEnumerable<Document?> Items, int TotalCount)> GetUserAllDocumentsAsync(int page, int pageSize, string userId);
         Task AddAsync(Document document); //Application katmanı → Domain katmanına bağımlı olabilir (ama Infrastructure’a olamaz). 
                                                           // o yüzden UploadDocumentCommand içerisinde IFormFile kullanamayacağımız için burada kullanıyoruz.
         Task UpdateAsync(Document document);

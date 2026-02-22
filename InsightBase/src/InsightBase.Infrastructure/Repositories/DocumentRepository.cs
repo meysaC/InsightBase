@@ -31,7 +31,23 @@ namespace InsightBase.Infrastructure.Repositories
             }
 
         }
+        public async Task<Document?> GetUserDocumentByIdAsync(Guid id, string userId)
+        {
+            try
+            {
+                return await _context.Documents
+                                .AsNoTracking()
+                                .Include(d => d.Chunks)
+                                .ThenInclude(c => c.Embedding)
+                                .FirstOrDefaultAsync(d => d.Id == id && d.UserId == userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving document for documentId {id}, ex");
+                throw;
+            }
 
+        }
         public async Task<Document?> GetByIdAsync(Guid id)
         {
             // OKUMA İŞİ OLDUĞU İÇİN AsNoTracking kullanmak tracked entity’ler çakışıyor sorunu olmasını aza indirir
@@ -49,7 +65,18 @@ namespace InsightBase.Infrastructure.Repositories
                 throw;
             }
         }
+        public async Task<(IEnumerable<Document?> Items, int TotalCount)> GetUserAllDocumentsAsync(int page, int pageSize, string userId)
+        {
+            var totalCount = await _context.Documents.Where(d => d.UserId == userId).CountAsync();
 
+            var items = await _context.Documents
+                        .Where(d => d.UserId == userId)
+                        .OrderByDescending(d => d.CreatedAt)
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
+            return (items, totalCount);
+        }
         public async Task<(IEnumerable<Document> Items, int TotalCount)> GetAllAsync(int page, int pageSize) //items ve total count dönücez
         {
             var totalCount = await _context.Documents.CountAsync();
@@ -69,6 +96,7 @@ namespace InsightBase.Infrastructure.Repositories
             var documentDomain = await _context.Documents.FirstOrDefaultAsync(d => d.Id == document.Id);
 
             documentDomain.UserFileName = document.UserFileName;
+            documentDomain.DocumentType = document.DocumentType;
             documentDomain.LegalArea = document.LegalArea;
             documentDomain.IsPublic = document.IsPublic;
             documentDomain.UpdatedAt = document.UpdatedAt;
