@@ -7,6 +7,7 @@ namespace InsightBase.Application.Commands.Document
     {
         public Guid Id { get; set; }
         public string FileName { get; set; }
+        public string? DocumentType { get; set; }
         public string? LegalArea { get; set; }
         public bool IsPublic { get; set; }
     }

@@ -9,8 +9,7 @@ namespace InsightBase.Application.Handler.Document
     public class UpdateDocumentCommandHandler : IRequestHandler<UpdateDocumentCommand, DocumentDto>
     {
         private readonly IDocumentRepository _documents;
-        private readonly IStorageService _storage;
-        public UpdateDocumentCommandHandler(IDocumentRepository documents, IStorageService storage) => (_documents, _storage) = (documents, storage);
+        public UpdateDocumentCommandHandler(IDocumentRepository documents) => _documents = documents;
 
         public async Task<DocumentDto> Handle(UpdateDocumentCommand request, CancellationToken cancellationToken)
         {
@@ -20,6 +19,7 @@ namespace InsightBase.Application.Handler.Document
                 if (document == null ) return null;
 
                 document.UserFileName = request.FileName ?? document.UserFileName;
+                document.DocumentType = request.DocumentType ?? document.DocumentType;
                 document.LegalArea = request.LegalArea ?? document.LegalArea;
                 document.IsPublic = request.IsPublic;
                 document.UpdatedAt = DateTime.UtcNow;
@@ -28,16 +28,6 @@ namespace InsightBase.Application.Handler.Document
                 await _documents.SaveAsync();
 
                 return DocumentMapper.ToDocumentDto(document);
-                // return new DocumentDto
-                // {
-                //     Id = document.Id,
-                //     FileName = document.FileName,
-                //     UserFileName = document.UserFileName,
-                //     FilePath = document.FilePath,
-                //     DocumentType = document.DocumentType,
-                //     CreatedAt = document.CreatedAt,
-                //     UpdatedAt = document.UpdatedAt
-                // };
             }
             catch (Exception ex)
             {

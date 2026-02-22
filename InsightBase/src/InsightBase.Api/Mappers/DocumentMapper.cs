@@ -23,6 +23,7 @@ namespace InsightBase.Api.Mappers
             {
                 Id = id,
                 FileName = updateDocument.UserFileName, 
+                DocumentType = updateDocument.DocumentType,
                 LegalArea = updateDocument.LegalArea,
                 IsPublic = updateDocument.IsPublic
             };
