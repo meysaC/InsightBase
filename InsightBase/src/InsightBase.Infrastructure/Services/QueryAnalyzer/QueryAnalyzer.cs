@@ -19,7 +19,7 @@ namespace InsightBase.Infrastructure.Services.QueryAnalyzer
         }
 
         // query i analiz edip zenginleştirilmiş QueryContext dönüştürür
-        public async Task<QueryContext> AnalyzeAsync(string query, string? userId = null, CancellationToken cancellationToken = default)
+        public async Task<QueryContext> AnalyzeAsync(string query, string? userId, CancellationToken cancellationToken = default)
         {
             if(string.IsNullOrWhiteSpace(query))
             {

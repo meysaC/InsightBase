@@ -9,13 +9,13 @@ namespace InsightBase.Infrastructure.Services.RAG
     public class RAGOrchestrator : IRAGOrchestrator // ana RAG pipeline
                                 // tüm servisleri koordine eder: Query Analysis → Search → Ranking → Prompt → LLM → Validation
     {
-        private readonly IQueryAnalyzer _queryAnalyzer;
-        private readonly IHybridSearchService _searchService;
-        private readonly IAccessControlService _accessControl;
-        private readonly IPromptBuilder _promptBuilder;
-        private readonly ILLMClient _llmClient;
-        private readonly IAnswerValidator _answerValidator;
-        private readonly ICitationMapper _citationMapper;
+        private readonly IQueryAnalyzer _queryAnalyzer; // kullanıcının sorgusunu analiz eder, niyetini, gerekli bilgi türünü, kritik anahtar kelimeleri ve diğer bağlamsal ipuçlarını belirler. Bu, sonraki adımlar için temel oluşturur ve özellikle prompt oluşturma ve arama sonuçlarının sıralanması için kritik öneme sahiptir.
+        private readonly IHybridSearchService _searchService; // vektör search + keyword search + meta data fltering + fusion ranker + 
+        private readonly IAccessControlService _accessControl; // kullanıcının erişebileceği kaynakları belirler, search service'e erişim domain'i olarak iletir
+        private readonly IPromptBuilder _promptBuilder; // search sonuçlarını ve query context'ini alır, LLM için etkili bir prompt oluşturur. İyileştirme için kritik nokta, answer validation sonuçlarına göre prompt'u dinamik olarak güncelleme yeteneği (örneğin, doğrulama başarısız olursa daha katı kurallar içeren bir prompt ile yeniden deneme)
+        private readonly ILLMClient _llmClient; // prompt'u alır, LLM ile iletişim kurar, ham cevabı döndürür. İyileştirme için kritik nokta, LLM'den gelen cevaba göre validation sonuçlarını analiz edip gerekirse prompt'u güncelleyerek yeniden deneme yeteneği
+        private readonly IAnswerValidator _answerValidator; // LLM cevabını search sonuçları ve query context'i ile karşılaştırarak doğruluk, tutarlılık, kaynak kullanımı açısından değerlendirir. İyileştirme için kritik nokta, validation sonuçlarını detaylı bir şekilde analiz edip, LLM'ye geri bildirim olarak kullanarak cevabı iyileştirme yeteneği (örneğin, doğrulama başarısız olursa hangi kuralların ihlal edildiğini belirleyip, prompt'u buna göre güncelleyerek yeniden deneme)
+        private readonly ICitationMapper _citationMapper; // LLM cevabındaki kaynak referanslarını search sonuçlarıyla eşleştirerek doğrular ve kullanıcı dostu bir formatta sunar. İyileştirme için kritik nokta, LLM cevabındaki her bir ifade için hangi kaynağın referans gösterildiğini net bir şekilde belirleyip, eğer kaynak referansı eksik veya hatalıysa bunu tespit ederek cevaba geri bildirim sağlama yeteneği
         private readonly ILogger<RAGOrchestrator> _logger;
         private readonly IConfiguration _configuration;
         public RAGOrchestrator(

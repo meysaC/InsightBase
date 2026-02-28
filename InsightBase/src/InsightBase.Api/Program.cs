@@ -10,6 +10,7 @@ using InsightBase.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using InsightBase.Application.Interfaces;
+using InsightBase.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -112,6 +113,8 @@ app.UseCors(x => x
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<AnonymousMiddleware>(); // AnonymousIdMiddleware'i pipeline'a ekle (UseAuthentication ile user doldurulur, auth değilse anon üretir)
 
 app.MapControllers();
 app.Run();

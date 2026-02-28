@@ -42,7 +42,7 @@ namespace InsightBase.Application.Handler.Document
                 FileName = command.FileName,
                 //FilePath = fileUrl,
                 //FileType = command.FileType,
-                UserId = _currentUser.UserId ?? null, //string.IsNullOrEmpty(command.UserId) ? null : command.UserId,
+                UserId = _currentUser.Id ?? null, //string.IsNullOrEmpty(command.UserId) ? null : command.UserId,
                 CreatedAt = DateTime.UtcNow, 
                 Chunks = new List<DocumentChunk>(),
                 DocumentType = command.DocumentType, //kanun, yönetmelik, karar...

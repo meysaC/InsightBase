@@ -16,10 +16,13 @@ namespace InsightBase.Api.Controllers
         [HttpPost("analyze")]
         public async Task<IActionResult> AnalyzeQuery([FromBody] AnalyzeQueryRequest request)
         {
-            var result = await _mediator.Send(new AnalyzeQueryCommand(
-                request.Query,
-                null
-            ));
+            var result = await _mediator.Send(new AnalyzeQueryCommand(request.Query));
+            return Ok(result);
+        }
+        [HttpPost("send-message")]
+        public async Task<IActionResult> SendMessage([FromBody] SendMessageRequest request)
+        {
+            var result = await _mediator.Send(new SendMessageCommand(request.Query));
             return Ok(result);
         }
         

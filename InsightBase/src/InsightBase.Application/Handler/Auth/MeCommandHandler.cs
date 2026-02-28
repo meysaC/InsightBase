@@ -13,7 +13,7 @@ namespace InsightBase.Application.Handler.Auth
         public MeCommandHandler(IUserRepository userRepo, ICurrentUserService currentUser) => (_userRepo, _currentUser) = (userRepo, currentUser);
         public async Task<Result<DTOs.Auth.MeResponseDto>> Handle(MeCommand request, CancellationToken cancellationToken)
         {
-            var userId = _currentUser.UserId;
+            var userId = _currentUser.Id;
             if(userId is null ) return Result<DTOs.Auth.MeResponseDto>.Fail("Unauthorized");
 
             var user = await _userRepo.GetUserByIdAsync(userId); 

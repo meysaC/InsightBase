@@ -18,7 +18,7 @@ namespace InsightBase.Application.Handler.Document
 
         public async Task<DocumentDto> Handle(GetDocumentByIdCommand request, CancellationToken cancellationToken)
         {
-            var userId = _currentUser.UserId;
+            var userId = _currentUser.Id;
             if (userId == null) throw new UnauthorizedAccessException("User is not authenticated.");
             var document = await _documentRepo.GetUserDocumentByIdAsync(request.Id, userId);
             if (document == null) return null;
