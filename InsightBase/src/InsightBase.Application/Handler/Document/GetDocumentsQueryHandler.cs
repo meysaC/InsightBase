@@ -16,7 +16,7 @@ namespace InsightBase.Application.Handler.Document
             => (_documentRepo, _storage, _currentUser) = (documentRepo, storage, currentUser);
         public async Task<PagedResult<DocumentDto?>> Handle(GetDocumentsQueryCommand request, CancellationToken cancellationToken)
         {
-            var userId = _currentUser.UserId;
+            var userId = _currentUser.Id;
             var (items, totalCount) = await _documentRepo.GetUserAllDocumentsAsync(request.Page, request.PageSize, userId);
 
             var dtoList = items.Select(DocumentMapper.ToDocumentDto).ToList();

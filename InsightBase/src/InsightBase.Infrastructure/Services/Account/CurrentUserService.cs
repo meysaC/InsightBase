@@ -9,7 +9,15 @@ namespace InsightBase.Infrastructure.Services.Account
     {
         private readonly IHttpContextAccessor _context;
         public CurrentUserService(IHttpContextAccessor context) => _context = context;
-        public string? UserId => 
-                        _context.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //ClaimTypes.NameIdentifier -> jwt claim'den HttpContext.User.Claims okunuyor 
+        public string? Id
+        {
+            get
+            {
+                var user = _context.HttpContext?.User;
+                if(user?.Identity?.IsAuthenticated == true) return user.FindFirstValue(ClaimTypes.NameIdentifier); //?.Value 
+
+                return _context.HttpContext?.Items["AnonymousUserId"]?.ToString(); // Anonymous kullanıcılar için HttpContext.Items'ta tutulan geçici Id'yi döndür
+            }
+        }
     }
 }
